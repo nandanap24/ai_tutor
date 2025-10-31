@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Python for Loop - Large Dropdown & Values</title>
+    <style>
+      :root {
+        --bg: #f8f9fa;
+        --card: white;
+        --text: #2c3e50;
+        --code-bg: #2c3e50;
+        --code-text: #f8f8f2;
+        --primary: #3498db;
+        --success: #27ae60;
+        --danger: #e74c3c;
+        --warning: #f1c40f;
+        --gray: #95a5a6;
+        --box-bg: #3498db;
+      }
+      [data-theme="dark"] {
+        --bg: #1e1e1e;
+        --card: #2d2d2d;
+        --text: #ecf0f1;
+        --code-bg: #1a1a1a;
+        --code-text: #f8f8f2;
+        --box-bg: #2980b9;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 20px;
+        transition: 0.3s;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 20px auto;
+        background: var(--card);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      }
+      h1 {
+        text-align: center;
+        color: var(--primary);
+        margin: 0 0 8px;
+      }
+      .subtitle {
+        text-align: center;
+        color: var(--gray);
+        font-size: 15px;
+        margin-bottom: 25px;
+      }
+
+      .data-types-section {
+        text-align: center;
+        margin-bottom: 25px;
+      }
+      .data-types-heading {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--primary);
+        margin-bottom: 10px;
+      }
+      .data-types-select {
+        padding: 16px 20px;
+        font-size: 20px;
+        font-weight: 600;
+        border: 3px solid var(--primary);
+        border-radius: 14px;
+        background: var(--card);
+        color: var(--text);
+        min-width: 260px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      .data-types-select:focus {
+        outline: none;
+        border-color: var(--success);
+        box-shadow: 0 0 14px rgba(39, 174, 96, 0.4);
+        transform: scale(1.02);
+      }
+
+      .input-area {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      input {
+        flex: 1;
+        min-width: 260px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 15px;
+      }
+
+      .code {
+        background: var(--code-bg);
+        color: var(--code-text);
+        padding: 18px;
+        border-radius: 10px;
+        font-family: "Fira Code", monospace;
+        margin: 20px 0;
+        line-height: 1.7;
+      }
+      .line {
+        padding-left: 45px;
+        position: relative;
+        counter-increment: line;
+      }
+      .line::before {
+        content: counter(line);
+        position: absolute;
+        left: 12px;
+        color: #666;
+        font-size: 13px;
+      }
+      .line.active {
+        background: rgba(241, 196, 15, 0.25);
+        border-left: 4px solid var(--warning);
+        padding-left: 41px;
+      }
+
+      .array-container {
+        display: flex;
+        justify-content: center;
+        margin: 35px 0;
+        position: relative;
+        min-height: 110px;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .box {
+        width: 85px;
+        height: 85px;
+        background: var(--box-bg);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        word-break: break-all;
+        padding: 5px;
+        text-align: center;
+      }
+      .box > div:first-child {
+        font-size: 20px;
+        font-weight: bold;
+        line-height: 1.1;
+      }
+      .box .key {
+        font-size: 13px;
+        color: #f1c40f;
+        font-weight: normal;
+      }
+      .box .val {
+        font-size: 15px;
+        margin-top: 2px;
+      }
+      .box .index {
+        font-size: 11px;
+        margin-top: 4px;
+        color: #ecf0f1;
+      }
+
+      .pointer {
+        position: absolute;
+        top: -38px;
+        font-size: 30px;
+        font-weight: bold;
+        color: var(--danger);
+        opacity: 0;
+        transition: all 0.4s ease;
+      }
+
+      .current-value {
+        text-align: center;
+        margin: 25px 0;
+        font-size: 23px;
+        font-weight: bold;
+        color: var(--success);
+        min-height: 38px;
+      }
+      .step-counter {
+        text-align: center;
+        font-size: 19px;
+        color: var(--primary);
+        margin: 12px 0;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 25px 0;
+      }
+
+      /* DYNAMIC BUTTONS: HOVER WITHOUT COLOR CHANGE */
+      button {
+        padding: 11px 20px;
+        font-size: 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Hover: Lift + Scale + Shadow */
+      button:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Disabled state */
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Button colors (unchanged on hover) */
+      button.play {
+        background: var(--success);
+        color: white;
+      }
+      button.next {
+        background: var(--primary);
+        color: white;
+      }
+      button.reset {
+        background: var(--gray);
+        color: white;
+      }
+      button.speed {
+        background: #e67e22;
+        color: white;
+      }
+      button.download {
+        background: #8e44ad;
+        color: white;
+      }
+      button.theme {
+        background: #34495e;
+        color: white;
+      }
+
+      .status {
+        text-align: center;
+        font-family: "Courier New", monospace;
+        background: #ecf0f1;
+        color: #2c3e50;
+        padding: 14px;
+        border-radius: 8px;
+        margin-top: 15px;
+        min-height: 24px;
+      }
+      [data-theme="dark"] .status {
+        background: #34495e;
+        color: #ecf0f1;
+      }
+
+      .highlight {
+        background: var(--warning) !important;
+        transform: scale(1.18);
+        box-shadow: 0 0 22px rgba(241, 196, 15, 0.7);
+      }
+      .done {
+        background: var(--gray) !important;
+        opacity: 0.75;
+      }
+    </style>
+    <link
+      href="https://cdn.jsdelivr.net/npm/firacode@6/distr/fira_code.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Python <code>for</code> Loop Visualizer</h1>
+      <p class="subtitle">See how iteration works on different data types</p>
+
+      <div class="data-types-section">
+        <div class="data-types-heading">Data Types</div>
+        <select id="dataType" class="data-types-select">
+          <option value="list">List</option>
+          <option value="tuple">Tuple</option>
+          <option value="string">String</option>
+          <option value="dict">Dictionary</option>
+          <option value="set">Set</option>
+          <option value="range">range()</option>
+        </select>
+      </div>
+
+      <div class="input-area">
+        <input
+          type="text"
+          id="inputValues"
+          placeholder="e.g. apple, banana, cherry"
+        />
+        <button id="updateBtn" class="next">Update</button>
+      </div>
+
+      <div class="code" id="codeBlock">
+        <div class="line" id="line1">data = <span id="dataCode">...</span></div>
+        <div class="line active" id="line2">for i in data:</div>
+        <div class="line" id="line3">print(i)</div>
+      </div>
+
+      <div class="array-container" id="array"></div>
+
+      <div class="current-value" id="currentValue">
+        Click "Next Step" to begin...
+      </div>
+      <div class="step-counter" id="stepCounter">Step 0 / 0</div>
+
+      <div class="controls">
+        <button class="play" id="playBtn">Play</button>
+        <button class="next" id="nextBtn">Next Step</button>
+        <button class="reset" id="resetBtn">Reset</button>
+        <button class="speed" id="speedBtn">Speed: Medium</button>
+        <button class="download" id="downloadBtn">Download</button>
+        <button class="theme" id="themeBtn">Dark Mode</button>
+      </div>
+
+      <div class="status" id="status">Ready</div>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+      const speeds = { slow: 2200, medium: 1400, fast: 700 };
+      let currentSpeed = "medium";
+
+      const dataTypeSelect = document.getElementById("dataType");
+      const inputValues = document.getElementById("inputValues");
+      const updateBtn = document.getElementById("updateBtn");
+      const dataCode = document.getElementById("dataCode");
+      const line1 = document.getElementById("line1");
+      const line2 = document.getElementById("line2");
+      const line3 = document.getElementById("line3");
+      const arrayContainer = document.getElementById("array");
+      const currentValueEl = document.getElementById("currentValue");
+      const statusEl = document.getElementById("status");
+      const stepCounter = document.getElementById("stepCounter");
+
+      const playBtn = document.getElementById("playBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const speedBtn = document.getElementById("speedBtn");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const themeBtn = document.getElementById("themeBtn");
+
+      let data = [];
+      let iterator = null;
+      let step = 0;
+      let totalSteps = 0;
+      let interval = null;
+      let isPlaying = false;
+
+      const defaults = {
+        list: "apple, banana, cherry, date, grape, fig",
+        tuple: "1, 2, 3, 4, 5",
+        string: "Python",
+        dict: "name: Alice, age: 25, city: NYC",
+        set: "red, green, blue, red",
+        range: "6",
+      };
+
+      function parseInput() {
+        const type = dataTypeSelect.value;
+        const raw = inputValues.value.trim() || defaults[type];
+
+        if (type === "range") {
+          const n = parseInt(raw) || 6;
+          return Array.from({ length: n }, (_, i) => i);
+        }
+        if (type === "dict") {
+          return Object.fromEntries(
+            raw
+              .split(",")
+              .map((s) => {
+                const [k, v = ""] = s.split(":").map((t) => t.trim());
+                return [k || "key", v || "value"];
+              })
+              .filter(([k]) => k)
+          );
+        }
+        if (type === "set") {
+          return [
+            ...new Set(
+              raw
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean)
+            ),
+          ];
+        }
+        if (type === "string") {
+          return raw.split("");
+        }
+        return raw
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+
+      function renderArray() {
+        arrayContainer.innerHTML = "";
+        const type = dataTypeSelect.value;
+        const iterable = type === "dict" ? Object.entries(data) : data;
+
+        iterable.forEach((item, i) => {
+          const box = document.createElement("div");
+          box.className = "box";
+          box.dataset.index = i;
+
+          if (type === "dict") {
+            const [k, v] = item;
+            box.innerHTML = `
+              <div class="key">${k}</div>
+              <div class="val">→ ${v}</div>
+              <div class="index">[${i}]</div>
+            `;
+          } else {
+            box.innerHTML = `
+              <div>${item}</div>
+              <div class="index">[${i}]</div>
+            `;
+          }
+          arrayContainer.appendChild(box);
+        });
+
+        const pointer = document.createElement("div");
+        pointer.id = "pointer";
+        pointer.className = "pointer";
+        pointer.textContent = "i";
+        arrayContainer.appendChild(pointer);
+
+        updateCode();
+      }
+
+      function updateCode() {
+        const type = dataTypeSelect.value;
+        let code = "";
+        if (type === "list") code = `[${data.map((v) => `"${v}"`).join(", ")}]`;
+        else if (type === "tuple")
+          code = `(${data.map((v) => `"${v}"`).join(", ")})`;
+        else if (type === "string") code = `"${data.join("")}"`;
+        else if (type === "dict")
+          code = `{${Object.entries(data)
+            .map(([k, v]) => `"${k}": "${v}"`)
+            .join(", ")}}`;
+        else if (type === "set")
+          code = `{${[...new Set(data)].map((v) => `"${v}"`).join(", ")}}`;
+        else if (type === "range") code = `range(${data.length})`;
+        dataCode.textContent =
+          code.length > 60 ? code.slice(0, 57) + "..." : code;
+      }
+
+      function highlightLine(n) {
+        [line1, line2, line3].forEach((l, i) =>
+          l.classList.toggle("active", i + 1 === n)
+        );
+      }
+
+      function movePointer(index) {
+        const pointer = document.getElementById("pointer");
+        const box = document.querySelector(`.box[data-index="${index}"]`);
+        if (box) {
+          const rect = box.getBoundingClientRect();
+          const containerRect = arrayContainer.getBoundingClientRect();
+          pointer.style.left = `${
+            rect.left - containerRect.left + rect.width / 2
+          }px`;
+          pointer.style.opacity = "1";
+        }
+      }
+
+      function highlightBox(index) {
+        document.querySelectorAll(".box").forEach((b, i) => {
+          b.classList.remove("highlight", "done");
+          if (i < index) b.classList.add("done");
+          if (i === index) b.classList.add("highlight");
+        });
+      }
+
+      function reset() {
+        data = parseInput();
+        const type = dataTypeSelect.value;
+        const iterable = type === "dict" ? Object.entries(data) : data;
+        totalSteps = iterable.length;
+        step = 0;
+        iterator = iterable[Symbol.iterator]();
+        renderArray();
+        currentValueEl.textContent = 'Click "Next Step" to begin...';
+        statusEl.textContent = "Ready";
+        stepCounter.textContent = `Step 0 / ${totalSteps}`;
+        highlightLine(2);
+        document.getElementById("pointer").style.opacity = "0";
+        clearInterval(interval);
+        isPlaying = false;
+        playBtn.textContent = "Play";
+        nextBtn.disabled = false;
+        document
+          .querySelectorAll(".box")
+          .forEach((b) => b.classList.remove("highlight", "done"));
+      }
+
+      function nextStep() {
+        if (step >= totalSteps) {
+          statusEl.innerHTML =
+            '<span style="color:#e74c3c">StopIteration</span> → loop ends';
+          currentValueEl.textContent = "Loop finished!";
+          nextBtn.disabled = true;
+          clearInterval(interval);
+          isPlaying = false;
+          playBtn.textContent = "Play";
+          return;
+        }
+
+        const result = iterator.next();
+        if (result.done) {
+          nextStep();
+          return;
+        }
+
+        const value = result.value;
+        const index = step;
+
+        highlightLine(2);
+        highlightBox(index);
+        movePointer(index);
+
+        let displayValue = Array.isArray(value)
+          ? `"${value[0]}": "${value[1]}"`
+          : value;
+
+        currentValueEl.innerHTML = `<span style="color:#e67e22">i</span> = <span style="color:#27ae60">${displayValue}</span>`;
+        statusEl.innerHTML = `<span style="font-family: monospace;">print the value</span> → <span style="color:#27ae60">"${displayValue}"</span>`;
+        stepCounter.textContent = `Step ${step + 1} / ${totalSteps}`;
+        step++;
+      }
+
+      function togglePlay() {
+        if (isPlaying) {
+          clearInterval(interval);
+          isPlaying = false;
+          playBtn.textContent = "Play";
+        } else {
+          isPlaying = true;
+          playBtn.textContent = "Pause";
+          interval = setInterval(() => {
+            nextStep();
+            if (nextBtn.disabled) {
+              clearInterval(interval);
+              isPlaying = false;
+              playBtn.textContent = "Play";
+            }
+          }, speeds[currentSpeed]);
+        }
+      }
+
+      function cycleSpeed() {
+        const order = ["slow", "medium", "fast"];
+        const idx = order.indexOf(currentSpeed);
+        currentSpeed = order[(idx + 1) % 3];
+        speedBtn.textContent = `Speed: ${
+          currentSpeed.charAt(0).toUpperCase() + currentSpeed.slice(1)
+        }`;
+        if (isPlaying) {
+          clearInterval(interval);
+          interval = setInterval(nextStep, speeds[currentSpeed]);
+        }
+      }
+
+      function downloadImage() {
+        html2canvas(document.querySelector(".container")).then((canvas) => {
+          const link = document.createElement("a");
+          link.download = `for-loop-${dataTypeSelect.value}.png`;
+          link.href = canvas.toDataURL();
+          link.click();
+        });
+      }
+
+      function toggleTheme() {
+        const isDark = document.body.getAttribute("data-theme") === "dark";
+        document.body.setAttribute("data-theme", isDark ? "light" : "dark");
+        themeBtn.textContent = isDark ? "Dark Mode" : "Light Mode";
+      }
+
+      dataTypeSelect.addEventListener("change", () => {
+        inputValues.value = defaults[dataTypeSelect.value];
+        reset();
+      });
+      updateBtn.addEventListener("click", reset);
+      nextBtn.addEventListener("click", nextStep);
+      resetBtn.addEventListener("click", reset);
+      playBtn.addEventListener("click", togglePlay);
+      speedBtn.addEventListener("click", cycleSpeed);
+      downloadBtn.addEventListener("click", downloadImage);
+      themeBtn.addEventListener("click", toggleTheme);
+
+      inputValues.value = defaults.list;
+      reset();
+    </script>
+  </body>
+</html>
