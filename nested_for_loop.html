@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nested Python for Loop Visualizer</title>
+    <style>
+      :root {
+        --bg: #f8f9fa;
+        --card: white;
+        --text: #2c3e50;
+        --code-bg: #2c3e50;
+        --code-text: #f8f8f2;
+        --primary: #3498db;
+        --success: #27ae60;
+        --danger: #e74c3c;
+        --warning: #f1c40f;
+        --gray: #95a5a6;
+        --outer-bg: #3498db;
+        --inner-bg: #27ae60;
+      }
+      [data-theme="dark"] {
+        --bg: #1e1e1e;
+        --card: #2d2d2d;
+        --text: #ecf0f1;
+        --code-bg: #1a1a1a;
+        --code-text: #f8f8f2;
+        --outer-bg: #2980b9;
+        --inner-bg: #1e8449;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 20px;
+        transition: 0.3s;
+      }
+      .container {
+        max-width: 1100px;
+        margin: 20px auto;
+        background: var(--card);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      }
+      h1 {
+        text-align: center;
+        color: var(--primary);
+        margin: 0 0 8px;
+      }
+      .subtitle {
+        text-align: center;
+        color: var(--gray);
+        font-size: 15px;
+        margin-bottom: 25px;
+      }
+
+      .data-types-section {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        margin-bottom: 25px;
+      }
+      .loop-group {
+        text-align: center;
+      }
+      .loop-heading {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--primary);
+        margin-bottom: 10px;
+      }
+      .data-types-select {
+        padding: 16px 20px;
+        font-size: 20px;
+        font-weight: 600;
+        border: 3px solid var(--primary);
+        border-radius: 14px;
+        background: var(--card);
+        color: var(--text);
+        min-width: 260px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      .data-types-select:focus {
+        outline: none;
+        border-color: var(--success);
+        box-shadow: 0 0 14px rgba(39, 174, 96, 0.4);
+        transform: scale(1.02);
+      }
+
+      .input-area {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      input {
+        flex: 1;
+        min-width: 260px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 15px;
+      }
+
+      /* EXACT SAME CODE BLOCK AS IN YOUR IMAGE */
+      .code {
+        background: var(--code-bg);
+        color: var(--code-text);
+        padding: 18px;
+        border-radius: 10px;
+        font-family: "Fira Code", monospace;
+        margin: 20px 0;
+        line-height: 1.7;
+      }
+      .line {
+        padding-left: 45px;
+        position: relative;
+        counter-increment: line;
+      }
+      .line::before {
+        content: counter(line);
+        position: absolute;
+        left: 12px;
+        color: #666;
+        font-size: 13px;
+      }
+      .line.active {
+        background: rgba(241, 196, 15, 0.25);
+        border-left: 4px solid var(--warning);
+        padding-left: 41px;
+      }
+
+      .loops-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+        margin: 35px 0;
+      }
+      .loop-boxes {
+        width: 100%;
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+      }
+      .loop-label {
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 12px;
+        color: var(--primary);
+      }
+
+      .array-container {
+        display: inline-flex;
+        gap: 12px;
+        flex-wrap: nowrap;
+        align-items: center;
+        position: relative;
+        min-height: 100px;
+        justify-content: center;
+      }
+
+      .box {
+        width: 85px;
+        height: 85px;
+        background: var(--outer-bg);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        word-break: break-all;
+        padding: 5px;
+        text-align: center;
+      }
+      .box > div:first-child {
+        font-size: 20px;
+        font-weight: bold;
+        line-height: 1.1;
+      }
+
+      .box.inner {
+        width: 75px;
+        height: 75px;
+        background: var(--inner-bg);
+        padding: 4px;
+      }
+      .box.inner > div:first-child {
+        font-size: 18px;
+        line-height: 1.1;
+      }
+
+      .box .index {
+        font-size: 11px;
+        margin-top: 4px;
+        color: #ecf0f1;
+      }
+
+      .pointer {
+        position: absolute;
+        bottom: -38px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 30px;
+        font-weight: bold;
+        opacity: 0;
+        transition: all 0.4s ease;
+      }
+      .pointer.i {
+        color: var(--danger);
+      }
+      .pointer.j {
+        color: #f39c12;
+      }
+
+      .current-value {
+        text-align: center;
+        margin: 25px 0;
+        font-size: 23px;
+        font-weight: bold;
+        color: var(--success);
+        min-height: 38px;
+      }
+      .step-counter {
+        text-align: center;
+        font-size: 19px;
+        color: var(--primary);
+        margin: 12px 0;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 25px 0;
+      }
+
+      button {
+        padding: 11px 20px;
+        font-size: 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+      }
+      button:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      button.play {
+        background: var(--success);
+        color: white;
+      }
+      button.next {
+        background: var(--primary);
+        color: white;
+      }
+      button.reset {
+        background: var(--gray);
+        color: white;
+      }
+      button.speed {
+        background: #e67e22;
+        color: white;
+      }
+      button.download {
+        background: #8e44ad;
+        color: white;
+      }
+      button.theme {
+        background: #34495e;
+        color: white;
+      }
+
+      .status {
+        text-align: center;
+        font-family: "Courier New", monospace;
+        background: #ecf0f1;
+        color: #2c3e50;
+        padding: 14px;
+        border-radius: 8px;
+        margin-top: 15px;
+        min-height: 24px;
+      }
+      [data-theme="dark"] .status {
+        background: #34495e;
+        color: #ecf0f1;
+      }
+
+      .highlight {
+        background: var(--warning) !important;
+        transform: scale(1.18);
+        box-shadow: 0 0 22px rgba(241, 196, 15, 0.7);
+      }
+      .done {
+        background: var(--gray) !important;
+        opacity: 0.75;
+      }
+
+      @media (max-width: 600px) {
+        .array-container {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        .box {
+          margin: 6px;
+        }
+      }
+    </style>
+    <link
+      href="https://cdn.jsdelivr.net/npm/firacode@6/distr/fira_code.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Python Nested <code>for</code> Loop Visualizer</h1>
+      <p class="subtitle">See how <code>nested for loop</code> works</p>
+
+      <!-- 6 DATA TYPES ADDED -->
+      <div class="data-types-section">
+        <div class="loop-group">
+          <div class="loop-heading">Outer Loop</div>
+          <select id="outerType" class="data-types-select">
+            <option value="list">list</option>
+            <option value="tuple">tuple</option>
+            <option value="range">range()</option>
+            <option value="str">string</option>
+            <option value="set">set</option>
+            <option value="dict">dict</option>
+          </select>
+        </div>
+        <div class="loop-group">
+          <div class="loop-heading">Inner Loop</div>
+          <select id="innerType" class="data-types-select">
+            <option value="list">list</option>
+            <option value="tuple">tuple</option>
+            <option value="range">range()</option>
+            <option value="str">string</option>
+            <option value="set">set</option>
+            <option value="dict">dict</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <input
+          type="text"
+          id="outerInput"
+          placeholder="e.g. A, B, C or (1,2) or abc or {x,y} or a:1,b:2"
+        />
+        <input
+          type="text"
+          id="innerInput"
+          placeholder="e.g. 1, 2 or (x,y) or hi or {p,q} or x:10"
+        />
+        <button id="updateBtn" class="next">Update</button>
+      </div>
+
+      <!-- EXACT SAME INDENTATION & SPACING AS YOUR IMAGE -->
+      <div class="code" id="codeBlock">
+        <div class="line" id="line1">
+          outer = <span id="outerCode">...</span>
+        </div>
+        <div class="line" id="line2">
+          inner = <span id="innerCode">...</span>
+        </div>
+        <div class="line active" id="line3">for i in outer:</div>
+        <div class="line" id="line4">&nbsp;for j in inner:</div>
+        <div class="line" id="line5">&nbsp;&nbsp;print(i, j)</div>
+      </div>
+
+      <div class="loops-container">
+        <div class="loop-boxes">
+          <div class="loop-label">Outer Loop (i)</div>
+          <div class="array-container" id="outerArray"></div>
+        </div>
+        <div class="loop-boxes">
+          <div class="loop-label">Inner Loop (j)</div>
+          <div class="array-container" id="innerArray"></div>
+        </div>
+      </div>
+
+      <div class="current-value" id="currentValue">
+        Click "Next Step" to begin...
+      </div>
+      <div class="step-counter" id="stepCounter">Step 0 / 0</div>
+
+      <div class="controls">
+        <button class="play" id="playBtn">Play</button>
+        <button class="next" id="nextBtn">Next Step</button>
+        <button class="reset" id="resetBtn">Reset</button>
+        <button class="speed" id="speedBtn">Speed: Medium</button>
+        <button class="download" id="downloadBtn">Download</button>
+        <button class="theme" id="themeBtn">Dark Mode</button>
+      </div>
+
+      <div class="status" id="status">Ready</div>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+      const speeds = { slow: 2200, medium: 1400, fast: 700 };
+      let currentSpeed = "medium";
+
+      const outerType = document.getElementById("outerType");
+      const innerType = document.getElementById("innerType");
+      const outerInput = document.getElementById("outerInput");
+      const innerInput = document.getElementById("innerInput");
+      const updateBtn = document.getElementById("updateBtn");
+      const outerCode = document.getElementById("outerCode");
+      const innerCode = document.getElementById("innerCode");
+      const line1 = document.getElementById("line1");
+      const line2 = document.getElementById("line2");
+      const line3 = document.getElementById("line3");
+      const line4 = document.getElementById("line4");
+      const line5 = document.getElementById("line5");
+      const outerArray = document.getElementById("outerArray");
+      const innerArray = document.getElementById("innerArray");
+      const currentValueEl = document.getElementById("currentValue");
+      const statusEl = document.getElementById("status");
+      const stepCounter = document.getElementById("stepCounter");
+
+      const playBtn = document.getElementById("playBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const speedBtn = document.getElementById("speedBtn");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const themeBtn = document.getElementById("themeBtn");
+
+      let outer = [],
+        inner = [];
+      let i = 0,
+        j = 0,
+        totalI = 0,
+        totalJ = 0;
+      let step = 0,
+        totalSteps = 0;
+      let interval = null,
+        isPlaying = false;
+
+      const defaults = {
+        list: "A, B, C",
+        tuple: "(1, 2)",
+        range: "3",
+        str: "abc",
+        set: "{x, y}",
+        dict: "a:1, b:2",
+      };
+
+      function parseInput(input, type) {
+        const raw = input.value.trim() || defaults[type];
+        switch (type) {
+          case "list":
+            return raw
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean);
+          case "tuple":
+            return raw
+              .replace(/\(|\)/g, "")
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean);
+          case "range":
+            return Array.from(
+              { length: Math.max(1, parseInt(raw) || 3) },
+              (_, i) => i
+            );
+          case "str":
+            return raw.split("");
+          case "set":
+            return raw
+              .replace(/\{|\}/g, "")
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean);
+          case "dict":
+            const pairs = raw.split(",").map((s) => s.trim());
+            const obj = {};
+            pairs.forEach((p) => {
+              const [k, v] = p.split(":").map((s) => s.trim());
+              if (k) obj[k] = v || "";
+            });
+            return Object.entries(obj);
+          default:
+            return [];
+        }
+      }
+
+      function formatCode(value, type) {
+        switch (type) {
+          case "list":
+            return `["${value.join('", "')}"]`;
+          case "tuple":
+            return `("${value.join('", "')}")`;
+          case "range":
+            return `range(${value.length})`;
+          case "str":
+            return `"${value.join("")}"`;
+          case "set":
+            return `{${value.map((v) => `"${v}"`).join(", ")}}`;
+          case "dict":
+            return `{${value.map(([k, v]) => `"${k}": "${v}"`).join(", ")}}`;
+          default:
+            return "...";
+        }
+      }
+
+      function renderArrays() {
+        [outerArray, innerArray].forEach((arr) => (arr.innerHTML = ""));
+        const containers = [outerArray, innerArray];
+        const dataArr = [outer, inner];
+        const classes = ["", "inner"];
+        const pointers = ["i", "j"];
+
+        dataArr.forEach((data, idx) => {
+          const container = containers[idx];
+          data.forEach((item, pos) => {
+            const box = document.createElement("div");
+            box.className = `box ${classes[idx]}`;
+            box.dataset.index = pos;
+            const display = Array.isArray(item)
+              ? `${item[0]}:${item[1]}`
+              : item;
+            box.innerHTML = `<div>${display}</div><div class="index">[${pos}]</div>`;
+            container.appendChild(box);
+          });
+
+          const ptr = document.createElement("div");
+          ptr.id = `pointer-${pointers[idx]}`;
+          ptr.className = `pointer ${pointers[idx]}`;
+          ptr.textContent = pointers[idx];
+          container.appendChild(ptr);
+        });
+
+        updateCode();
+      }
+
+      function updateCode() {
+        const ot = outerType.value,
+          it = innerType.value;
+        const ocode = formatCode(outer, ot);
+        const icode = formatCode(inner, it);
+        outerCode.textContent =
+          ocode.length > 50 ? ocode.slice(0, 47) + "..." : ocode;
+        innerCode.textContent =
+          icode.length > 50 ? icode.slice(0, 47) + "..." : icode;
+      }
+
+      function highlightLine(n) {
+        [line1, line2, line3, line4, line5].forEach((l, i) =>
+          l.classList.toggle("active", i + 1 === n)
+        );
+      }
+
+      function movePointer(containerId, index, pointerId) {
+        const ptr = document.getElementById(pointerId);
+        const box = document.querySelector(
+          `#${containerId} .box[data-index="${index}"]`
+        );
+        if (box && ptr) {
+          const rect = box.getBoundingClientRect();
+          const contRect = document
+            .getElementById(containerId)
+            .getBoundingClientRect();
+          ptr.style.left = `${rect.left - contRect.left + rect.width / 2}px`;
+          ptr.style.opacity = "1";
+        }
+      }
+
+      function highlightBox(container, index, isActive) {
+        const boxes = document.querySelectorAll(`#${container} .box`);
+        boxes.forEach((b, idx) => {
+          b.classList.remove("highlight", "done");
+          if (idx < index) b.classList.add("done");
+          if (idx === index && isActive) b.classList.add("highlight");
+        });
+      }
+
+      function reset() {
+        outer = parseInput(outerInput, outerType.value);
+        inner = parseInput(innerInput, innerType.value);
+        totalI = outer.length;
+        totalJ = inner.length;
+        totalSteps = totalI * totalJ;
+        i = j = step = 0;
+
+        renderArrays();
+        currentValueEl.textContent = 'Click "Next Step" to begin...';
+        statusEl.textContent = "Ready";
+        stepCounter.textContent = `Step 0 / ${totalSteps}`;
+        highlightLine(3);
+        ["i", "j"].forEach((p) => {
+          const ptr = document.getElementById(`pointer-${p}`);
+          if (ptr) ptr.style.opacity = "0";
+        });
+        clearInterval(interval);
+        isPlaying = false;
+        playBtn.textContent = "Play";
+        nextBtn.disabled = false;
+        document
+          .querySelectorAll(".box")
+          .forEach((b) => b.classList.remove("highlight", "done"));
+      }
+
+      function nextStep() {
+        if (step >= totalSteps) {
+          statusEl.innerHTML =
+            '<span style="color:#e74c3c">Loop finished</span>';
+          currentValueEl.textContent = "All pairs printed!";
+          nextBtn.disabled = true;
+          clearInterval(interval);
+          isPlaying = false;
+          playBtn.textContent = "Play";
+          return;
+        }
+
+        const outerIdx = Math.floor(step / totalJ);
+        const innerIdx = step % totalJ;
+
+        if (j === 0) highlightLine(3);
+        else if (j < totalJ) highlightLine(4);
+        else highlightLine(5);
+
+        highlightBox("outerArray", outerIdx, true);
+        highlightBox("innerArray", innerIdx, true);
+        movePointer("outerArray", outerIdx, "pointer-i");
+        movePointer("innerArray", innerIdx, "pointer-j");
+
+        const iVal = Array.isArray(outer[outerIdx])
+          ? `${outer[outerIdx][0]}:${outer[outerIdx][1]}`
+          : outer[outerIdx];
+        const jVal = Array.isArray(inner[innerIdx])
+          ? `${inner[innerIdx][0]}:${inner[innerIdx][1]}`
+          : inner[innerIdx];
+
+        // ← NEW STATUS DISPLAY
+        statusEl.innerHTML = `print the values → "<span style="color:#27ae60">${iVal}, ${jVal}</span>"`;
+
+        currentValueEl.innerHTML = `print(<span style="color:#27ae60">"${iVal}, ${jVal}"</span>)`;
+
+        stepCounter.textContent = `Step ${step + 1} / ${totalSteps}`;
+        step++;
+
+        if (j < totalJ - 1) j++;
+        else {
+          j = 0;
+          i++;
+        }
+      }
+
+      function togglePlay() {
+        if (isPlaying) {
+          clearInterval(interval);
+          isPlaying = false;
+          playBtn.textContent = "Play";
+        } else {
+          isPlaying = true;
+          playBtn.textContent = "Pause";
+          interval = setInterval(() => {
+            nextStep();
+            if (nextBtn.disabled) togglePlay();
+          }, speeds[currentSpeed]);
+        }
+      }
+
+      function cycleSpeed() {
+        const order = ["slow", "medium", "fast"];
+        currentSpeed = order[(order.indexOf(currentSpeed) + 1) % 3];
+        speedBtn.textContent = `Speed: ${
+          currentSpeed.charAt(0).toUpperCase() + currentSpeed.slice(1)
+        }`;
+        if (isPlaying) {
+          clearInterval(interval);
+          interval = setInterval(nextStep, speeds[currentSpeed]);
+        }
+      }
+
+      function downloadImage() {
+        html2canvas(document.querySelector(".container")).then((canvas) => {
+          const a = document.createElement("a");
+          a.download = "nested-for-loop.png";
+          a.href = canvas.toDataURL();
+          a.click();
+        });
+      }
+
+      function toggleTheme() {
+        const isDark = document.body.getAttribute("data-theme") === "dark";
+        document.body.setAttribute("data-theme", isDark ? "light" : "dark");
+        themeBtn.textContent = isDark ? "Dark Mode" : "Light Mode";
+      }
+
+      [outerType, innerType].forEach((sel) =>
+        sel.addEventListener("change", () => {
+          const id = sel.id === "outerType" ? "outerInput" : "innerInput";
+          const type = sel.value;
+          document.getElementById(id).placeholder = `e.g. ${defaults[type]}`;
+          document.getElementById(id).value = defaults[type];
+          reset();
+        })
+      );
+
+      updateBtn.addEventListener("click", reset);
+      nextBtn.addEventListener("click", nextStep);
+      resetBtn.addEventListener("click", reset);
+      playBtn.addEventListener("click", togglePlay);
+      speedBtn.addEventListener("click", cycleSpeed);
+      downloadBtn.addEventListener("click", downloadImage);
+      themeBtn.addEventListener("click", toggleTheme);
+
+      outerInput.value = defaults.list;
+      innerInput.value = defaults.list;
+      reset();
+    </script>
+  </body>
+</html>
