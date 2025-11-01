@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Python if Statement Visualiser</title>
+    <style>
+      :root {
+        --bg: #f8f9fa;
+        --card: white;
+        --text: #2c3e50;
+        --code-bg: #2c3e50;
+        --code-text: #f8f8f2;
+        --primary: #3498db;
+        --success: #27ae60;
+        --danger: #e74c3c;
+        --warning: #f1c40f;
+        --gray: #95a5a6;
+        --cond-bg: #e67e22;
+        --true-bg: #27ae60;
+        --false-bg: #95a5a6;
+      }
+      [data-theme="dark"] {
+        --bg: #1e1e1e;
+        --card: #2d2d2d;
+        --text: #ecf0f1;
+        --code-bg: #1a1a1a;
+        --code-text: #f8f8f2;
+        --cond-bg: #d35400;
+        --true-bg: #1e8449;
+        --false-bg: #7f8c8d;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 20px;
+        transition: 0.3s;
+      }
+      .container {
+        max-width: 1100px;
+        margin: 20px auto;
+        background: var(--card);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      }
+      h1 {
+        text-align: center;
+        color: var(--primary);
+        margin: 0 0 8px;
+      }
+      .subtitle {
+        text-align: center;
+        color: var(--gray);
+        font-size: 15px;
+        margin-bottom: 25px;
+      }
+      .controls-section {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        margin-bottom: 25px;
+      }
+      .loop-group {
+        text-align: center;
+      }
+      .loop-heading {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--primary);
+        margin-bottom: 10px;
+      }
+      .data-types-select {
+        padding: 16px 20px;
+        font-size: 20px;
+        font-weight: 600;
+        border: 3px solid var(--primary);
+        border-radius: 14px;
+        background: var(--card);
+        color: var(--text);
+        min-width: 260px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      .data-types-select:focus {
+        outline: none;
+        border-color: var(--success);
+        box-shadow: 0 0 14px rgba(39, 174, 96, 0.4);
+        transform: scale(1.02);
+      }
+      .input-area {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      input {
+        flex: 1;
+        min-width: 260px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 15px;
+      }
+      .code {
+        background: var(--code-bg);
+        color: var(--code-text);
+        padding: 18px;
+        border-radius: 10px;
+        font-family: "Fira Code", monospace;
+        margin: 20px 0;
+        line-height: 1.7;
+      }
+      .line {
+        padding-left: 45px;
+        position: relative;
+        counter-increment: line;
+      }
+      .line::before {
+        content: counter(line);
+        position: absolute;
+        left: 12px;
+        color: #666;
+        font-size: 13px;
+      }
+      .line.active {
+        background: rgba(241, 196, 15, 0.25);
+        border-left: 4px solid var(--warning);
+        padding-left: 41px;
+      }
+
+      /* Output Box */
+      .output-box {
+        width: 280px;
+        height: 100px;
+        background: #f1f8ff;
+        border: 3px solid #3498db;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 30px auto;
+        font-size: 24px;
+        font-weight: bold;
+        color: #2c3e50;
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.2);
+        text-align: center;
+        padding: 10px;
+      }
+      .age-label {
+        text-align: center;
+        font-size: 22px;
+        font-weight: bold;
+        color: #2c3e50;
+        margin: 20px 0 10px;
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      .current-value {
+        text-align: center;
+        margin: 25px 0;
+        font-size: 23px;
+        font-weight: bold;
+        color: var(--success);
+        min-height: 38px;
+      }
+      .current-value.hidden {
+        display: none;
+      }
+      .step-counter {
+        text-align: center;
+        font-size: 19px;
+        color: var(--primary);
+        margin: 12px 0;
+      }
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 25px 0;
+      }
+      button {
+        padding: 11px 20px;
+        font-size: 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      button:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+      button.play {
+        background: var(--success);
+        color: white;
+      }
+      button.next {
+        background: var(--primary);
+        color: white;
+      }
+      button.reset {
+        background: var(--gray);
+        color: white;
+      }
+      button.speed {
+        background: #e67e22;
+        color: white;
+      }
+      button.download {
+        background: #8e44ad;
+        color: white;
+      }
+      button.theme {
+        background: #34495e;
+        color: white;
+      }
+      .status {
+        text-align: center;
+        font-family: "Courier New", monospace;
+        background: #ecf0f1;
+        color: #2c3e50;
+        padding: 14px;
+        border-radius: 8px;
+        margin-top: 15px;
+        min-height: 24px;
+      }
+      [data-theme="dark"] .status {
+        background: #34495e;
+        color: #ecf0f1;
+      }
+    </style>
+    <link
+      href="https://cdn.jsdelivr.net/npm/firacode@6/distr/fira_code.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Python <code>if</code> Statement Visualiser</h1>
+      <p class="subtitle">See how <code>if condition</code> works</p>
+
+      <!-- Control Flow Selector -->
+      <div class="controls-section">
+        <div class="loop-group">
+          <div class="loop-heading">Control flow</div>
+          <select id="flowType" class="data-types-select">
+            <option value="if">if</option>
+            <option value="ifelse">if-else</option>
+            <option value="elifelse">if-elif-else</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Input fields -->
+      <div class="input-area">
+        <input type="text" id="inputAge" placeholder="Enter age" value="20" />
+        <input
+          type="text"
+          id="cond1"
+          placeholder="Condition (e.g. age > 18)"
+          value="age > 18"
+        />
+        <input type="text" id="cond2" placeholder="elif condition (optional)" />
+        <input
+          type="text"
+          id="printIf"
+          placeholder="Print if true"
+          value="Eligible to Vote."
+        />
+        <input
+          type="text"
+          id="printElse"
+          placeholder="Print else (optional)"
+          value="Not eligible."
+        />
+        <input
+          type="text"
+          id="printElif"
+          placeholder="Print in elif (optional)"
+          value="Teenager"
+        />
+        <button id="updateBtn" class="next">Update</button>
+      </div>
+
+      <!-- Code block -->
+      <div class="code" id="codeBlock"></div>
+
+      <!-- Age Label + Output Box -->
+      <div class="age-label" id="ageLabel">
+        Check the age: <span id="ageValue">20</span>
+      </div>
+      <div class="output-box" id="outputBox">Output is...</div>
+      <!-- CHANGED HERE -->
+
+      <div class="current-value" id="currentValue">
+        Click “Next Step” to begin…
+      </div>
+      <div class="step-counter" id="stepCounter">Step 0 / 1</div>
+
+      <div class="controls">
+        <button class="play" id="playBtn">Play</button>
+        <button class="next" id="nextBtn">Next Step</button>
+        <button class="reset" id="resetBtn">Reset</button>
+        <button class="speed" id="speedBtn">Speed: Medium</button>
+        <button class="download" id="downloadBtn">Download</button>
+        <button class="theme" id="themeBtn">Dark Mode</button>
+      </div>
+
+      <div class="status" id="status">Ready</div>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+      /* ---------- CONFIG ---------- */
+      const speeds = { slow: 2200, medium: 1400, fast: 700 };
+      let speed = "medium";
+
+      /* ---------- ELEMENTS ---------- */
+      const flowType = document.getElementById("flowType");
+      const inputAge = document.getElementById("inputAge");
+      const cond1 = document.getElementById("cond1");
+      const cond2 = document.getElementById("cond2");
+      const printIf = document.getElementById("printIf");
+      const printElse = document.getElementById("printElse");
+      const printElif = document.getElementById("printElif");
+      const updateBtn = document.getElementById("updateBtn");
+      const codeBlock = document.getElementById("codeBlock");
+      const ageLabel = document.getElementById("ageLabel");
+      const ageValue = document.getElementById("ageValue");
+      const outputBox = document.getElementById("outputBox");
+      const currentValue = document.getElementById("currentValue");
+      const status = document.getElementById("status");
+      const stepCounter = document.getElementById("stepCounter");
+      const playBtn = document.getElementById("playBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const speedBtn = document.getElementById("speedBtn");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const themeBtn = document.getElementById("themeBtn");
+
+      /* ---------- STATE ---------- */
+      let ageVal,
+        step = 0,
+        interval = null,
+        playing = false;
+
+      /* ---------- CODE GENERATION ---------- */
+      function buildCodeBlock() {
+        ageVal = parseInt(inputAge.value, 10);
+        if (isNaN(ageVal)) ageVal = 0;
+        const indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
+
+        const c1 = cond1.value.trim() || "True";
+        const c2 = cond2.value.trim() || "True";
+        const pIf = printIf.value.trim() || '"Eligible to Vote."';
+        const pElse = printElse.value.trim() || '"Not eligible."';
+        const pElif = printElif.value.trim() || '"In elif"';
+
+        const lines = [`age = ${ageVal}`];
+
+        if (flowType.value === "if") {
+          lines.push(`if ${c1}:`);
+          lines.push(`${indent}print(${pIf})`);
+        } else if (flowType.value === "ifelse") {
+          lines.push(`if ${c1}:`);
+          lines.push(`${indent}print(${pIf})`);
+          lines.push(`else:`);
+          lines.push(`${indent}print(${pElse})`);
+        } else {
+          lines.push(`if ${c1}:`);
+          lines.push(`${indent}print(${pIf})`);
+          lines.push(`elif ${c2}:`);
+          lines.push(`${indent}print(${pElif})`);
+          lines.push(`else:`);
+          lines.push(`${indent}print(${pElse})`);
+        }
+
+        codeBlock.innerHTML = "";
+        lines.forEach((txt, idx) => {
+          const div = document.createElement("div");
+          div.className = "line";
+          div.id = `line${idx + 1}`;
+          div.innerHTML = txt;
+          codeBlock.appendChild(div);
+        });
+
+        ageValue.textContent = ageVal;
+      }
+
+      /* ---------- EVALUATION ---------- */
+      function evalCond(cond) {
+        const safe = cond.replace(/age/g, ageVal);
+        try {
+          return !!eval(`(${safe})`);
+        } catch (e) {
+          return false;
+        }
+      }
+
+      /* ---------- STEP ---------- */
+      function nextStep() {
+        if (step > 0) {
+          status.innerHTML = '<span style="color:#e74c3c">Finished</span>';
+          currentValue.textContent = "All done!";
+          nextBtn.disabled = true;
+          clearInterval(interval);
+          playing = false;
+          playBtn.textContent = "Play";
+          return;
+        }
+
+        const flow = flowType.value;
+        const c1 = evalCond(cond1.value.trim() || "True");
+        const c2 =
+          flow === "elifelse" ? evalCond(cond2.value.trim() || "True") : false;
+
+        let output = "";
+        let lineToHighlight = 2;
+
+        function highlight(n) {
+          document
+            .querySelectorAll(".line")
+            .forEach((l, i) => l.classList.toggle("active", i + 1 === n));
+        }
+
+        if (flow === "if") {
+          lineToHighlight = c1 ? 3 : 2;
+          if (c1) output = printIf.value.trim();
+        } else if (flow === "ifelse") {
+          if (c1) {
+            lineToHighlight = 3;
+            output = printIf.value.trim();
+          } else {
+            lineToHighlight = 5;
+            output = printElse.value.trim();
+          }
+        } else {
+          if (c1) {
+            lineToHighlight = 3;
+            output = printIf.value.trim();
+          } else if (c2) {
+            lineToHighlight = 5;
+            output = printElif.value.trim();
+          } else {
+            lineToHighlight = 7;
+            output = printElse.value.trim();
+          }
+        }
+
+        const clean = output.replace(/^["']|["']$/g, "");
+        status.innerHTML = `print → "<span style="color:#27ae60">${clean}</span>"`;
+
+        // Show result in output box
+        outputBox.innerHTML = `<div>${clean}</div>`;
+
+        highlight(lineToHighlight);
+        stepCounter.textContent = "Step 1 / 1";
+        step = 1;
+        currentValue.classList.add("hidden"); // <-- ADD THIS LINE
+      }
+
+      /* ---------- CONTROLS ---------- */
+      function resetUI() {
+        currentValue.textContent = "Click “Next Step” to begin…";
+        currentValue.classList.remove("hidden");
+        status.textContent = "Ready";
+        stepCounter.textContent = "Step 0 / 1";
+        document
+          .querySelectorAll(".line")
+          .forEach((l) => l.classList.remove("active"));
+        outputBox.innerHTML = "Output is..."; // CHANGED HERE
+        clearInterval(interval);
+        playing = false;
+        playBtn.textContent = "Play";
+        nextBtn.disabled = false;
+        step = 0;
+      }
+      function updateAll() {
+        buildCodeBlock();
+        resetUI();
+      }
+      function togglePlay() {
+        if (playing) {
+          clearInterval(interval);
+          playing = false;
+          playBtn.textContent = "Play";
+        } else {
+          playing = true;
+          playBtn.textContent = "Pause";
+          interval = setInterval(() => {
+            nextStep();
+            if (nextBtn.disabled) togglePlay();
+          }, speeds[speed]);
+        }
+      }
+      function cycleSpeed() {
+        const o = ["slow", "medium", "fast"];
+        speed = o[(o.indexOf(speed) + 1) % 3];
+        speedBtn.textContent = `Speed: ${
+          speed.charAt(0).toUpperCase() + speed.slice(1)
+        }`;
+        if (playing) {
+          clearInterval(interval);
+          interval = setInterval(nextStep, speeds[speed]);
+        }
+      }
+      function download() {
+        html2canvas(document.querySelector(".container")).then((c) => {
+          const a = document.createElement("a");
+          a.download = "if-visualiser.png";
+          a.href = c.toDataURL();
+          a.click();
+        });
+      }
+      function toggleTheme() {
+        const dark = document.body.getAttribute("data-theme") === "dark";
+        document.body.setAttribute("data-theme", dark ? "light" : "dark");
+        themeBtn.textContent = dark ? "Dark Mode" : "Light Mode";
+      }
+
+      /* ---------- EVENTS ---------- */
+      flowType.addEventListener("change", updateAll);
+      updateBtn.addEventListener("click", updateAll);
+      nextBtn.addEventListener("click", nextStep);
+      resetBtn.addEventListener("click", updateAll);
+      playBtn.addEventListener("click", togglePlay);
+      speedBtn.addEventListener("click", cycleSpeed);
+      downloadBtn.addEventListener("click", download);
+      themeBtn.addEventListener("click", toggleTheme);
+
+      /* ---------- INIT ---------- */
+      updateAll();
+    </script>
+  </body>
+</html>
