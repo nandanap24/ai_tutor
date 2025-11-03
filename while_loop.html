@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>While Loop + if / elif / else (User Input)</title>
+    <style>
+      :root {
+        --bg: #f8f9fa;
+        --card: white;
+        --text: #2c3e50;
+        --code-bg: #2c3e50;
+        --code-text: #f8f8f2;
+        --primary: #3498db;
+        --success: #27ae60;
+        --danger: #e74c3c;
+        --warning: #f1c40f;
+        --gray: #95a5a6;
+      }
+      [data-theme="dark"] {
+        --bg: #1e1e1e;
+        --card: #2d2d2d;
+        --text: #ecf0f1;
+        --code-bg: #1a1a1a;
+        --code-text: #f8f8f2;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 20px;
+        transition: 0.3s;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 20px auto;
+        background: var(--card);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      }
+      h1 {
+        text-align: center;
+        color: var(--primary);
+        margin: 0 0 8px;
+      }
+      .subtitle {
+        text-align: center;
+        color: var(--gray);
+        font-size: 15px;
+        margin-bottom: 25px;
+      }
+
+      /* INPUT AREA – SPACED & STYLED */
+      .input-area {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 30px 0 20px 0;
+        align-items: center;
+      }
+      input[type="number"],
+      select {
+        flex: 1;
+        min-width: 120px;
+        padding: 12px;
+        border: 3px solid #1a5276 !important;
+        border-radius: 8px;
+        font-size: 16px;
+        background: white;
+        color: #2c3e50;
+      }
+
+      select {
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      input[type="number"]:focus,
+      select:focus {
+        outline: none;
+        border: 3px solid #3498db !important;
+        box-shadow: 0 0 10px rgba(52, 152, 219, 0.4);
+      }
+
+      .code {
+        background: var(--code-bg);
+        color: var(--code-text);
+        padding: 18px;
+        border-radius: 10px;
+        font-family: "Fira Code", monospace;
+        margin: 20px 0;
+        line-height: 1.7;
+      }
+      .line {
+        padding-left: 45px;
+        position: relative;
+        counter-increment: line;
+      }
+      .line::before {
+        content: counter(line);
+        position: absolute;
+        left: 12px;
+        color: #666;
+        font-size: 13px;
+      }
+      .line.active {
+        background: rgba(241, 196, 15, 0.25);
+        border-left: 4px solid var(--warning);
+        padding-left: 41px;
+      }
+
+      .var-display {
+        display: flex;
+        justify-content: center;
+        gap: 60px;
+        margin: 20px 0;
+        font-size: 20px;
+        font-weight: bold;
+        color: var(--text);
+      }
+      .var-item span {
+        color: var(--success);
+      }
+
+      .output-box {
+        width: 420px;
+        height: 220px;
+        background: #f1f8ff;
+        border: 3px solid #3498db;
+        border-radius: 16px;
+        margin: 30px auto;
+        font-size: 20px;
+        font-weight: bold;
+        font-family: "Fira Code", monospace;
+        color: #2c3e50;
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.2);
+        padding: 15px;
+        overflow-y: auto;
+        line-height: 1.8;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .current-value {
+        text-align: center;
+        margin: 25px 0;
+        font-size: 23px;
+        font-weight: bold;
+        color: var(--success);
+        min-height: 38px;
+      }
+      .current-value.hidden {
+        display: none;
+      }
+
+      .step-counter {
+        text-align: center;
+        font-size: 19px;
+        color: var(--primary);
+        margin: 12px 0;
+      }
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 25px 0;
+      }
+      button {
+        padding: 11px 20px;
+        font-size: 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      button:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+      button.play {
+        background: var(--success);
+        color: white;
+      }
+      button.next {
+        background: var(--primary);
+        color: white;
+      }
+      button.reset {
+        background: var(--gray);
+        color: white;
+      }
+      button.speed {
+        background: #e67e22;
+        color: white;
+      }
+      button.download {
+        background: #8e44ad;
+        color: white;
+      }
+      button.theme {
+        background: #34495e;
+        color: white;
+      }
+    </style>
+    <link
+      href="https://cdn.jsdelivr.net/npm/firacode@6/distr/fira_code.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Python <code>while</code> loop</h1>
+      <p class="subtitle">While loop working</p>
+
+      <!-- INPUT: Count + Dropdown + Update -->
+      <div class="input-area">
+        <input
+          type="number"
+          id="inputCount"
+          placeholder="Start count"
+          value="1"
+          min="1"
+        />
+        <select id="loopType">
+          <option value="simple">Simple while loop</option>
+          <option value="if">while + if loop</option>
+          <option value="ifelse">while + if-else loop</option>
+          <option value="elif">while + if-elif-else loop</option>
+        </select>
+        <button id="updateBtn" class="next">Update</button>
+      </div>
+
+      <!-- Code block -->
+      <div class="code" id="codeBlock"></div>
+
+      <!-- Variable display -->
+      <div class="var-display">
+        <div class="var-item">count : <span id="dispCount">1</span></div>
+      </div>
+
+      <!-- Output – Centered & Bold -->
+      <div class="output-box" id="outputBox">Output is...</div>
+
+      <!-- Instruction -->
+      <div class="current-value" id="currentValue">
+        Click “Next Step” to begin…
+      </div>
+      <div class="step-counter" id="stepCounter">Step 0 / 11</div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button class="play" id="playBtn">Play</button>
+        <button class="next" id="nextBtn">Next Step</button>
+        <button class="reset" id="resetBtn">Reset</button>
+        <button class="speed" id="speedBtn">Speed: Medium</button>
+        <button class="download" id="downloadBtn">Download</button>
+        <button class="theme" id="themeBtn">Dark Mode</button>
+      </div>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+      /* ---------- 4-space indent ---------- */
+      const indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
+
+      /* ---------- DOM ---------- */
+      const inputCount = document.getElementById("inputCount");
+      const loopType = document.getElementById("loopType");
+      const updateBtn = document.getElementById("updateBtn");
+      const codeBlock = document.getElementById("codeBlock");
+      const dispCount = document.getElementById("dispCount");
+      const outputBox = document.getElementById("outputBox");
+      const currentVal = document.getElementById("currentValue");
+      const stepCount = document.getElementById("stepCounter");
+      const playBtn = document.getElementById("playBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const speedBtn = document.getElementById("speedBtn");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const themeBtn = document.getElementById("themeBtn");
+
+      /* ---------- State ---------- */
+      let startCount,
+        count,
+        step = 0,
+        interval = null,
+        playing = false;
+      let outputLines = [];
+      let mode = "simple";
+
+      /* ---------- Speed ---------- */
+      const speeds = { slow: 2200, medium: 1400, fast: 700 };
+      let speed = "medium";
+
+      /* ---------- Mode definitions ---------- */
+      const modes = {
+        simple: {
+          name: "Simple while",
+          code: (c) => [
+            `count = ${c}`,
+            `while count <= 5:`,
+            `${indent}print("Hello", count)`,
+            `${indent}count = count + 1`,
+            `print("Done!")`,
+          ],
+          totalSteps: () => 11,
+          stepsPerLoop: 2,
+          execPrint: (c) => outputLines.push(`Hello ${c}`),
+          execFinal: () => outputLines.push("Done!"),
+        },
+        if: {
+          name: "while + if",
+          code: (c) => [
+            `count = ${c}`,
+            `while count <= 5:`,
+            `${indent}if count > 3:`,
+            `${indent}${indent}print("Big")`,
+            `${indent}count = count + 1`,
+            `print("Done!")`,
+          ],
+          totalSteps: () => 16,
+          stepsPerLoop: 3,
+          execPrint: (c) => {
+            if (c > 3) outputLines.push("Big");
+          },
+          execFinal: () => outputLines.push("Done!"),
+        },
+        ifelse: {
+          name: "while + if-else",
+          code: (c) => [
+            `count = ${c}`,
+            `while count <= 5:`,
+            `${indent}if count % 2 == 0:`,
+            `${indent}${indent}print("Even")`,
+            `${indent}else:`,
+            `${indent}${indent}print("Odd")`,
+            `${indent}count = count + 1`,
+            `print("Done!")`,
+          ],
+          totalSteps: () => 16,
+          stepsPerLoop: 3,
+          execPrint: (c) => outputLines.push(c % 2 === 0 ? "Even" : "Odd"),
+          execFinal: () => outputLines.push("Done!"),
+        },
+        elif: {
+          name: "while + if-elif-else",
+          code: (c) => [
+            `count = ${c}`,
+            `while count <= 5:`,
+            `${indent}if count > 4:`,
+            `${indent}${indent}print("Big")`,
+            `${indent}elif count > 2:`,
+            `${indent}${indent}print("Medium")`,
+            `${indent}else:`,
+            `${indent}${indent}print("Small")`,
+            `${indent}count = count + 1`,
+            `print("Done!")`,
+          ],
+          totalSteps: () => 21,
+          stepsPerLoop: 4,
+          execPrint: (c) => {
+            if (c > 4) outputLines.push("Big");
+            else if (c > 2) outputLines.push("Medium");
+            else outputLines.push("Small");
+          },
+          execFinal: () => outputLines.push("Done!"),
+        },
+      };
+
+      /* ---------- Build code block ---------- */
+      function buildCodeBlock() {
+        startCount = parseInt(inputCount.value) || 1;
+        if (startCount < 1) startCount = 1;
+        count = startCount;
+        mode = loopType.value;
+        const m = modes[mode];
+
+        const lines = m.code(startCount);
+        codeBlock.innerHTML = "";
+        lines.forEach((txt, i) => {
+          const div = document.createElement("div");
+          div.className = "line";
+          div.id = `line${i + 1}`;
+          div.innerHTML = txt;
+          codeBlock.appendChild(div);
+        });
+
+        outputLines = [];
+        updateOutput();
+        resetUI();
+      }
+
+      /* ---------- Highlight ---------- */
+      function highlight(n) {
+        document
+          .querySelectorAll(".line")
+          .forEach((l, i) => l.classList.toggle("active", i + 1 === n));
+      }
+
+      /* ---------- Update output box ---------- */
+      function updateOutput() {
+        outputBox.innerHTML = outputLines.length
+          ? outputLines.map((l) => `<div>${l}</div>`).join("")
+          : '<div style="color:#95a5a6">Output is...</div>';
+      }
+
+      /* ---------- Next step (FIXED) ---------- */
+      function nextStep() {
+        const m = modes[mode];
+        const totalSteps = m.totalSteps();
+        if (step >= totalSteps) {
+          nextBtn.disabled = true;
+          clearInterval(interval);
+          playing = false;
+          playBtn.textContent = "Play";
+          return;
+        }
+
+        step++;
+        currentVal.classList.add("hidden");
+        stepCount.textContent = `Step ${step} / ${totalSteps}`;
+
+        const loopIdx = Math.floor((step - 1) / m.stepsPerLoop);
+        const stepInLoop = (step - 1) % m.stepsPerLoop;
+        const curCount = startCount + loopIdx;
+
+        // Final Done!
+        if (loopIdx >= 5) {
+          if (step === totalSteps) {
+            const lines = m.code(startCount);
+            const doneLine = lines.findIndex((l) => l.includes("Done!")) + 1;
+            highlight(doneLine);
+            m.execFinal();
+            updateOutput();
+          }
+          return;
+        }
+
+        // Highlight while condition
+        highlight(2);
+
+        if (mode === "simple") {
+          if (stepInLoop === 0) {
+            highlight(3); // print
+            m.execPrint(curCount);
+            updateOutput();
+          } else {
+            highlight(4); // count += 1
+            count = curCount + 1;
+            dispCount.textContent = count;
+          }
+          return;
+        }
+
+        // --- CONDITIONAL MODES: if / ifelse / elif ---
+        let printTriggered = false;
+
+        if (stepInLoop === 0) {
+          // First condition
+          highlight(3);
+        } else if (mode === "elif" && stepInLoop === 1) {
+          highlight(5); // elif
+        } else if (stepInLoop === (mode === "elif" ? 2 : 1)) {
+          // Execute print
+          const printLine =
+            m.code(startCount).findIndex((l) => l.includes("print(")) + 1;
+          highlight(printLine);
+          m.execPrint(curCount);
+          updateOutput();
+          printTriggered = true;
+        } else if (stepInLoop === m.stepsPerLoop - 1) {
+          // Increment
+          const incLine =
+            m
+              .code(startCount)
+              .findIndex((l) => l.includes("count = count + 1")) + 1;
+          highlight(incLine);
+          count = curCount + 1;
+          dispCount.textContent = count;
+        }
+
+        // Show skip message
+        if (
+          stepInLoop > 0 &&
+          !printTriggered &&
+          stepInLoop < m.stepsPerLoop - 1
+        ) {
+          currentVal.classList.remove("hidden");
+          currentVal.innerHTML = `<span style="color:#95a5a6">condition false → skip print</span>`;
+        }
+      }
+
+      /* ---------- Reset UI ---------- */
+      function resetUI() {
+        count = startCount;
+        outputLines = [];
+        updateOutput();
+        currentVal.textContent = "Click “Next Step” to begin…";
+        currentVal.classList.remove("hidden");
+        const m = modes[mode];
+        stepCount.textContent = `Step 0 / ${m.totalSteps()}`;
+        document
+          .querySelectorAll(".line")
+          .forEach((l) => l.classList.remove("active"));
+        step = 0;
+        nextBtn.disabled = false;
+        clearInterval(interval);
+        playing = false;
+        playBtn.textContent = "Play";
+        dispCount.textContent = count;
+      }
+
+      /* ---------- Controls ---------- */
+      function togglePlay() {
+        if (playing) {
+          clearInterval(interval);
+          playing = false;
+          playBtn.textContent = "Play";
+        } else {
+          playing = true;
+          playBtn.textContent = "Pause";
+          interval = setInterval(() => {
+            nextStep();
+            if (nextBtn.disabled) togglePlay();
+          }, speeds[speed]);
+        }
+      }
+      function cycleSpeed() {
+        const order = ["slow", "medium", "fast"];
+        speed = order[(order.indexOf(speed) + 1) % 3];
+        speedBtn.textContent = `Speed: ${
+          speed.charAt(0).toUpperCase() + speed.slice(1)
+        }`;
+        if (playing) {
+          clearInterval(interval);
+          interval = setInterval(nextStep, speeds[speed]);
+        }
+      }
+      function download() {
+        html2canvas(document.querySelector(".container")).then((c) => {
+          const a = document.createElement("a");
+          a.download = `while-${mode}.png`;
+          a.href = c.toDataURL();
+          a.click();
+        });
+      }
+      function toggleTheme() {
+        const dark = document.body.getAttribute("data-theme") === "dark";
+        document.body.setAttribute("data-theme", dark ? "light" : "dark");
+        themeBtn.textContent = dark ? "Dark Mode" : "Light Mode";
+      }
+
+      /* ---------- Events ---------- */
+      updateBtn.addEventListener("click", buildCodeBlock);
+      loopType.addEventListener("change", buildCodeBlock);
+      inputCount.addEventListener("input", buildCodeBlock);
+      nextBtn.addEventListener("click", nextStep);
+      resetBtn.addEventListener("click", buildCodeBlock);
+      playBtn.addEventListener("click", togglePlay);
+      speedBtn.addEventListener("click", cycleSpeed);
+      downloadBtn.addEventListener("click", download);
+      themeBtn.addEventListener("click", toggleTheme);
+
+      /* ---------- Init ---------- */
+      buildCodeBlock();
+    </script>
+  </body>
+</html>
