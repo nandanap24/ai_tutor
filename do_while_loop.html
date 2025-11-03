@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Do-While Loop Visualiser</title>
+    <style>
+      :root {
+        --bg: #f8f9fa;
+        --card: white;
+        --text: #2c3e50;
+        --code-bg: #2c3e50;
+        --code-text: #f8f8f2;
+        --primary: #3498db;
+        --success: #27ae60;
+        --danger: #e74c3c;
+        --warning: #f1c40f;
+        --gray: #95a5a6;
+      }
+      [data-theme="dark"] {
+        --bg: #1e1e1e;
+        --card: #2d2d2d;
+        --text: #ecf0f1;
+        --code-bg: #1a1a1a;
+        --code-text: #f8f8f2;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 20px;
+        transition: 0.3s;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 20px auto;
+        background: var(--card);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      }
+      h1 {
+        text-align: center;
+        color: var(--primary);
+        margin: 0 0 8px;
+      }
+      .subtitle {
+        text-align: center;
+        color: var(--gray);
+        font-size: 15px;
+        margin-bottom: 25px;
+      }
+      .input-area {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+        align-items: center;
+      }
+      input[type="number"] {
+        flex: 1;
+        min-width: 120px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 15px;
+      }
+      .code {
+        background: var(--code-bg);
+        color: var(--code-text);
+        padding: 18px;
+        border-radius: 10px;
+        font-family: "Fira Code", monospace;
+        margin: 20px 0;
+        line-height: 1.7;
+      }
+      .line {
+        padding-left: 45px;
+        position: relative;
+        counter-increment: line;
+      }
+      .line::before {
+        content: counter(line);
+        position: absolute;
+        left: 12px;
+        color: #666;
+        font-size: 13px;
+      }
+      .line.active {
+        background: rgba(241, 196, 15, 0.25);
+        border-left: 4px solid var(--warning);
+        padding-left: 41px;
+      }
+
+      .var-display {
+        display: flex;
+        justify-content: center;
+        gap: 60px;
+        margin: 20px 0;
+        font-size: 20px;
+        font-weight: bold;
+        color: var(--text);
+      }
+      .var-item span {
+        color: var(--success);
+      }
+
+      /* OUTPUT – CENTERED & BOLD */
+      .output-box {
+        width: 420px;
+        height: 180px;
+        background: #f1f8ff;
+        border: 3px solid #3498db;
+        border-radius: 16px;
+        margin: 30px auto;
+        font-size: 20px;
+        font-weight: bold;
+        font-family: "Fira Code", monospace;
+        color: #2c3e50;
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.2);
+        padding: 15px;
+        overflow-y: auto;
+        line-height: 1.8;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .current-value {
+        text-align: center;
+        margin: 25px 0;
+        font-size: 23px;
+        font-weight: bold;
+        color: var(--success);
+        min-height: 38px;
+      }
+      .current-value.hidden {
+        display: none;
+      }
+
+      .step-counter {
+        text-align: center;
+        font-size: 19px;
+        color: var(--primary);
+        margin: 12px 0;
+      }
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 25px 0;
+      }
+      button {
+        padding: 11px 20px;
+        font-size: 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      button:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+      button.play {
+        background: var(--success);
+        color: white;
+      }
+      button.next {
+        background: var(--primary);
+        color: white;
+      }
+      button.reset {
+        background: var(--gray);
+        color: white;
+      }
+      button.speed {
+        background: #e67e22;
+        color: white;
+      }
+      button.download {
+        background: #8e44ad;
+        color: white;
+      }
+      button.theme {
+        background: #34495e;
+        color: white;
+      }
+    </style>
+    <link
+      href="https://cdn.jsdelivr.net/npm/firacode@6/distr/fira_code.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Python <code>do-while</code> Loop (Simulated)</h1>
+
+      <!-- Inputs -->
+      <div class="input-area">
+        <input
+          type="number"
+          id="inputStart"
+          placeholder="Start count"
+          value="1"
+          min="1"
+        />
+        <input
+          type="number"
+          id="inputLimit"
+          placeholder="Loop until"
+          value="5"
+          min="2"
+        />
+        <button id="updateBtn" class="next">Update</button>
+      </div>
+
+      <!-- Code block -->
+      <div class="code" id="codeBlock"></div>
+
+      <!-- Variable display -->
+      <div class="var-display">
+        <div class="var-item">count : <span id="dispCount">1</span></div>
+      </div>
+
+      <!-- Output – Centered & Bold -->
+      <div class="output-box" id="outputBox">Output is...</div>
+
+      <!-- Instruction -->
+      <div class="current-value" id="currentValue">
+        Click “Next Step” to begin…
+      </div>
+      <div class="step-counter" id="stepCounter">Step 0 / 11</div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button class="play" id="playBtn">Play</button>
+        <button class="next" id="nextBtn">Next Step</button>
+        <button class="reset" id="resetBtn">Reset</button>
+        <button class="speed" id="speedBtn">Speed: Medium</button>
+        <button class="download" id="downloadBtn">Download</button>
+        <button class="theme" id="themeBtn">Dark Mode</button>
+      </div>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+      const speeds = { slow: 2200, medium: 1400, fast: 700 };
+      let speed = "medium";
+
+      const inputStart = document.getElementById("inputStart");
+      const inputLimit = document.getElementById("inputLimit");
+      const updateBtn = document.getElementById("updateBtn");
+      const codeBlock = document.getElementById("codeBlock");
+      const dispCount = document.getElementById("dispCount");
+      const outputBox = document.getElementById("outputBox");
+      const currentValue = document.getElementById("currentValue");
+      const stepCounter = document.getElementById("stepCounter");
+      const playBtn = document.getElementById("playBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const speedBtn = document.getElementById("speedBtn");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const themeBtn = document.getElementById("themeBtn");
+
+      let count,
+        limit,
+        step = 0,
+        interval = null,
+        playing = false;
+      let outputLines = [];
+      let firstLoop = true;
+
+      function buildCodeBlock() {
+        count = parseInt(inputStart.value);
+        if (isNaN(count)) count = 1;
+        limit = parseInt(inputLimit.value);
+        if (isNaN(limit) || limit < 2) limit = 5;
+
+        const indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
+
+        const lines = [
+          `count = ${count}`,
+          `do:`,
+          `${indent}print("Hello", count)`,
+          `${indent}count = count + 1`,
+          `while count <= ${limit}`,
+          `print("Done!")`,
+        ];
+
+        codeBlock.innerHTML = "";
+        lines.forEach((txt, idx) => {
+          const div = document.createElement("div");
+          div.className = "line";
+          div.id = `line${idx + 1}`;
+          div.innerHTML = txt;
+          codeBlock.appendChild(div);
+        });
+
+        outputLines = [];
+        firstLoop = true;
+        updateOutput();
+        resetUI();
+      }
+
+      function highlight(n) {
+        document
+          .querySelectorAll(".line")
+          .forEach((l, i) => l.classList.toggle("active", i + 1 === n));
+      }
+
+      function updateOutput() {
+        if (outputLines.length === 0) {
+          outputBox.innerHTML = '<div style="color:#95a5a6">Output is...</div>';
+        } else {
+          outputBox.innerHTML = outputLines
+            .map((line) => `<div>${line}</div>`)
+            .join("");
+        }
+      }
+
+      function nextStep() {
+        const totalLoops = limit - parseInt(inputStart.value) + 1;
+        const totalSteps = totalLoops * 3 + 1; // (print + increment + check) per loop + final Done!
+
+        if (step >= totalSteps) {
+          nextBtn.disabled = true;
+          clearInterval(interval);
+          playing = false;
+          playBtn.textContent = "Play";
+          return;
+        }
+
+        step++;
+        currentValue.classList.add("hidden");
+        stepCounter.textContent = `Step ${step} / ${totalSteps}`;
+
+        const loopIndex = Math.floor((step - 1) / 3);
+        const stepInLoop = (step - 1) % 3;
+        const currentCount = parseInt(inputStart.value) + loopIndex;
+
+        highlight(0);
+
+        // Final Done!
+        if (loopIndex >= totalLoops) {
+          if (step === totalSteps) {
+            highlight(6);
+            outputLines.push("Done!");
+            updateOutput();
+          }
+          return;
+        }
+
+        // Step 1: print
+        if (stepInLoop === 0) {
+          highlight(3);
+          outputLines.push(`Hello ${currentCount}`);
+          updateOutput();
+        }
+
+        // Step 2: increment
+        if (stepInLoop === 1) {
+          highlight(4);
+          count = currentCount + 1;
+          dispCount.textContent = count;
+        }
+
+        // Step 3: while condition check
+        if (stepInLoop === 2) {
+          highlight(5);
+          if (count > limit && loopIndex === totalLoops - 1) {
+            // Next step will be Done!
+          }
+        }
+      }
+
+      function resetUI() {
+        count = parseInt(inputStart.value);
+        outputLines = [];
+        firstLoop = true;
+        updateOutput();
+        currentValue.textContent = "Click “Next Step” to begin…";
+        currentValue.classList.remove("hidden");
+        const totalLoops = limit - count + 1;
+        const totalSteps = totalLoops * 3 + 1;
+        stepCounter.textContent = `Step 0 / ${totalSteps}`;
+        document
+          .querySelectorAll(".line")
+          .forEach((l) => l.classList.remove("active"));
+        step = 0;
+        nextBtn.disabled = false;
+        clearInterval(interval);
+        playing = false;
+        playBtn.textContent = "Play";
+        dispCount.textContent = count;
+      }
+
+      function updateAll() {
+        buildCodeBlock();
+      }
+
+      function togglePlay() {
+        if (playing) {
+          clearInterval(interval);
+          playing = false;
+          playBtn.textContent = "Play";
+        } else {
+          playing = true;
+          playBtn.textContent = "Pause";
+          interval = setInterval(() => {
+            nextStep();
+            if (nextBtn.disabled) togglePlay();
+          }, speeds[speed]);
+        }
+      }
+
+      function cycleSpeed() {
+        const o = ["slow", "medium", "fast"];
+        speed = o[(o.indexOf(speed) + 1) % 3];
+        speedBtn.textContent = `Speed: ${
+          speed.charAt(0).toUpperCase() + speed.slice(1)
+        }`;
+        if (playing) {
+          clearInterval(interval);
+          interval = setInterval(nextStep, speeds[speed]);
+        }
+      }
+
+      function download() {
+        html2canvas(document.querySelector(".container")).then((c) => {
+          const a = document.createElement("a");
+          a.download = "do-while-loop.png";
+          a.href = c.toDataURL();
+          a.click();
+        });
+      }
+
+      function toggleTheme() {
+        const dark = document.body.getAttribute("data-theme") === "dark";
+        document.body.setAttribute("data-theme", dark ? "light" : "dark");
+        themeBtn.textContent = dark ? "Dark Mode" : "Light Mode";
+      }
+
+      // Events
+      updateBtn.addEventListener("click", updateAll);
+      nextBtn.addEventListener("click", nextStep);
+      resetBtn.addEventListener("click", updateAll);
+      playBtn.addEventListener("click", togglePlay);
+      speedBtn.addEventListener("click", cycleSpeed);
+      downloadBtn.addEventListener("click", download);
+      themeBtn.addEventListener("click", toggleTheme);
+      inputStart.addEventListener("input", updateAll);
+      inputLimit.addEventListener("input", updateAll);
+
+      // Init
+      updateAll();
+    </script>
+  </body>
+</html>
