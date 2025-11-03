@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Python for Loop - Large Dropdown & Values</title>
+    <title>Python for Loop</title>
     <style>
       :root {
         --bg: #f8f9fa;
@@ -54,17 +54,28 @@
         margin-bottom: 25px;
       }
 
-      .data-types-section {
-        text-align: center;
-        margin-bottom: 25px;
+      .selection-row {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+        margin: 30px 0 20px 0;
+        align-items: flex-end;
       }
-      .data-types-heading {
+      .selection-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 280px;
+      }
+      .selection-heading {
         font-size: 18px;
         font-weight: bold;
         color: var(--primary);
         margin-bottom: 10px;
       }
-      .data-types-select {
+      .selection-select {
+        width: 100%;
         padding: 16px 20px;
         font-size: 20px;
         font-weight: 600;
@@ -72,12 +83,11 @@
         border-radius: 14px;
         background: var(--card);
         color: var(--text);
-        min-width: 260px;
         cursor: pointer;
         transition: all 0.3s ease;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       }
-      .data-types-select:focus {
+      .selection-select:focus {
         outline: none;
         border-color: var(--success);
         box-shadow: 0 0 14px rgba(39, 174, 96, 0.4);
@@ -138,7 +148,7 @@
       }
 
       .box {
-        width: 85px;
+        width: 100px;
         height: 85px;
         background: var(--box-bg);
         color: white;
@@ -153,19 +163,14 @@
         padding: 5px;
         text-align: center;
       }
-      .box > div:first-child {
-        font-size: 20px;
-        font-weight: bold;
-        line-height: 1.1;
-      }
       .box .key {
-        font-size: 13px;
-        color: #f1c40f;
-        font-weight: normal;
+        font-size: 16px;
+        font-weight: bold;
       }
       .box .val {
-        font-size: 15px;
+        font-size: 14px;
         margin-top: 2px;
+        color: #f1c40f;
       }
       .box .index {
         font-size: 11px;
@@ -206,7 +211,6 @@
         margin: 25px 0;
       }
 
-      /* DYNAMIC BUTTONS: HOVER WITHOUT COLOR CHANGE */
       button {
         padding: 11px 20px;
         font-size: 15px;
@@ -216,25 +220,16 @@
         font-weight: 600;
         transition: all 0.25s ease;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        position: relative;
-        overflow: hidden;
       }
-
-      /* Hover: Lift + Scale + Shadow */
       button:hover {
         transform: translateY(-3px) scale(1.05);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
       }
-
-      /* Disabled state */
       button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
         transform: none !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       }
-
-      /* Button colors (unchanged on hover) */
       button.play {
         background: var(--success);
         color: white;
@@ -292,40 +287,48 @@
   </head>
   <body>
     <div class="container">
-      <h1>Python <code>for</code> Loop Visualizer</h1>
-      <p class="subtitle">See how iteration works on different data types</p>
+      <h1>Python <code>for</code> Loop</h1>
+      <p class="subtitle">Simple for loop by default</p>
 
-      <div class="data-types-section">
-        <div class="data-types-heading">Data Types</div>
-        <select id="dataType" class="data-types-select">
-          <option value="list">List</option>
-          <option value="tuple">Tuple</option>
-          <option value="string">String</option>
-          <option value="dict">Dictionary</option>
-          <option value="set">Set</option>
-          <option value="range">range()</option>
-        </select>
+      <div class="selection-row">
+        <div class="selection-item">
+          <div class="selection-heading">Data Type</div>
+          <select id="dataType" class="selection-select">
+            <option value="list">List</option>
+            <option value="tuple">Tuple</option>
+            <option value="string">String</option>
+            <option value="dict">Dictionary</option>
+            <option value="set">Set</option>
+            <option value="range">range()</option>
+          </select>
+        </div>
+
+        <div class="selection-item">
+          <div class="selection-heading">Control Flow</div>
+          <select id="controlFlow" class="selection-select">
+            <option value="simple">Simple for loop</option>
+            <option value="if">for + if (len > 3)</option>
+            <option value="ifelse_char">for + if-else (contains 'a')</option>
+            <option value="elif_len">for + if-elif-else (word length)</option>
+          </select>
+        </div>
       </div>
 
       <div class="input-area">
         <input
           type="text"
           id="inputValues"
-          placeholder="e.g. apple, banana, cherry"
+          placeholder="e.g. Python, Java, C, Go, Rust"
         />
         <button id="updateBtn" class="next">Update</button>
       </div>
 
-      <div class="code" id="codeBlock">
-        <div class="line" id="line1">data = <span id="dataCode">...</span></div>
-        <div class="line active" id="line2">for i in data:</div>
-        <div class="line" id="line3">print(i)</div>
-      </div>
+      <div class="code" id="codeBlock"></div>
 
       <div class="array-container" id="array"></div>
 
       <div class="current-value" id="currentValue">
-        Click "Next Step" to begin...
+        Click “Next Step” to begin…
       </div>
       <div class="step-counter" id="stepCounter">Step 0 / 0</div>
 
@@ -347,12 +350,10 @@
       let currentSpeed = "medium";
 
       const dataTypeSelect = document.getElementById("dataType");
+      const controlFlowSelect = document.getElementById("controlFlow");
       const inputValues = document.getElementById("inputValues");
       const updateBtn = document.getElementById("updateBtn");
-      const dataCode = document.getElementById("dataCode");
-      const line1 = document.getElementById("line1");
-      const line2 = document.getElementById("line2");
-      const line3 = document.getElementById("line3");
+      const codeBlock = document.getElementById("codeBlock");
       const arrayContainer = document.getElementById("array");
       const currentValueEl = document.getElementById("currentValue");
       const statusEl = document.getElementById("status");
@@ -365,19 +366,22 @@
       const downloadBtn = document.getElementById("downloadBtn");
       const themeBtn = document.getElementById("themeBtn");
 
-      let data = [];
+      let data = {};
       let iterator = null;
       let step = 0;
       let totalSteps = 0;
       let interval = null;
       let isPlaying = false;
+      let mode = "simple";
+
+      const indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
       const defaults = {
-        list: "apple, banana, cherry, date, grape, fig",
-        tuple: "1, 2, 3, 4, 5",
-        string: "Python",
+        list: "Python, Java, C, Go, Rust",
+        tuple: "Python, Java, Go, C",
+        string: "Python, Java, C",
         dict: "name: Alice, age: 25, city: NYC",
-        set: "red, green, blue, red",
+        set: "red, green, blue",
         range: "6",
       };
 
@@ -410,19 +414,77 @@
             ),
           ];
         }
-        if (type === "string") {
-          return raw.split("");
-        }
         return raw
           .split(",")
           .map((s) => s.trim())
           .filter(Boolean);
       }
 
+      function buildCode() {
+        const type = dataTypeSelect.value;
+        mode = controlFlowSelect.value;
+        const isDict = type === "dict";
+        const iterable = isDict ? Object.keys(data) : data;
+
+        let lines = [];
+
+        let dataCode = "";
+        if (type === "list")
+          dataCode = `[${data.map((v) => `"${v}"`).join(", ")}]`;
+        else if (type === "tuple")
+          dataCode = `(${data.map((v) => `"${v}"`).join(", ")})`;
+        else if (type === "string") dataCode = `"${data.join(", ")}"`;
+        else if (type === "dict")
+          dataCode = `{${Object.entries(data)
+            .map(([k, v]) => `"${k}": "${v}"`)
+            .join(", ")}}`;
+        else if (type === "set")
+          dataCode = `{${[...new Set(data)].map((v) => `"${v}"`).join(", ")}}`;
+        else if (type === "range") dataCode = `range(${data.length})`;
+
+        lines.push(
+          `data = ${
+            dataCode.length > 60 ? dataCode.slice(0, 57) + "..." : dataCode
+          }`
+        );
+        lines.push(`for i in data:`);
+
+        if (mode === "simple") {
+          if (isDict) {
+            lines.push(`${indent}print(i, data[i])`);
+          } else {
+            lines.push(`${indent}print(i)`);
+          }
+        } else if (mode === "if") {
+          lines.push(`${indent}if len(str(i)) > 3:`);
+          lines.push(`${indent}${indent}print(f"Long: {i}")`);
+        } else if (mode === "ifelse_char") {
+          lines.push(`${indent}if "a" in str(i).lower():`);
+          lines.push(`${indent}${indent}print(f"{i} contains 'a'")`);
+          lines.push(`${indent}else:`);
+          lines.push(`${indent}${indent}print(f"{i} does not contain 'a'")`);
+        } else if (mode === "elif_len") {
+          lines.push(`${indent}if len(i) <= 4:`);
+          lines.push(`${indent}${indent}print(f"{i} is a short word")`);
+          lines.push(`${indent}elif len(i) <= 6:`);
+          lines.push(`${indent}${indent}print(f"{i} is a medium word")`);
+          lines.push(`${indent}else:`);
+          lines.push(`${indent}${indent}print(f"{i} is a long word")`);
+        }
+
+        codeBlock.innerHTML = lines
+          .map(
+            (line, i) => `
+          <div class="line" id="line${i + 1}">${line}</div>
+        `
+          )
+          .join("");
+      }
+
       function renderArray() {
         arrayContainer.innerHTML = "";
         const type = dataTypeSelect.value;
-        const iterable = type === "dict" ? Object.entries(data) : data;
+        const iterable = type === "dict" ? Object.keys(data) : data;
 
         iterable.forEach((item, i) => {
           const box = document.createElement("div");
@@ -430,17 +492,10 @@
           box.dataset.index = i;
 
           if (type === "dict") {
-            const [k, v] = item;
-            box.innerHTML = `
-              <div class="key">${k}</div>
-              <div class="val">→ ${v}</div>
-              <div class="index">[${i}]</div>
-            `;
+            const value = data[item];
+            box.innerHTML = `<div class="key">${item}</div><div class="val">→ ${value}</div><div class="index">[${i}]</div>`;
           } else {
-            box.innerHTML = `
-              <div>${item}</div>
-              <div class="index">[${i}]</div>
-            `;
+            box.innerHTML = `<div>${item}</div><div class="index">[${i}]</div>`;
           }
           arrayContainer.appendChild(box);
         });
@@ -450,32 +505,12 @@
         pointer.className = "pointer";
         pointer.textContent = "i";
         arrayContainer.appendChild(pointer);
-
-        updateCode();
-      }
-
-      function updateCode() {
-        const type = dataTypeSelect.value;
-        let code = "";
-        if (type === "list") code = `[${data.map((v) => `"${v}"`).join(", ")}]`;
-        else if (type === "tuple")
-          code = `(${data.map((v) => `"${v}"`).join(", ")})`;
-        else if (type === "string") code = `"${data.join("")}"`;
-        else if (type === "dict")
-          code = `{${Object.entries(data)
-            .map(([k, v]) => `"${k}": "${v}"`)
-            .join(", ")}}`;
-        else if (type === "set")
-          code = `{${[...new Set(data)].map((v) => `"${v}"`).join(", ")}}`;
-        else if (type === "range") code = `range(${data.length})`;
-        dataCode.textContent =
-          code.length > 60 ? code.slice(0, 57) + "..." : code;
       }
 
       function highlightLine(n) {
-        [line1, line2, line3].forEach((l, i) =>
-          l.classList.toggle("active", i + 1 === n)
-        );
+        document
+          .querySelectorAll(".line")
+          .forEach((l, i) => l.classList.toggle("active", i + 1 === n));
       }
 
       function movePointer(index) {
@@ -499,19 +534,57 @@
         });
       }
 
+      function shouldPrint(value) {
+        const type = dataTypeSelect.value;
+        const strVal = String(value);
+        const len = strVal.length;
+
+        if (mode === "simple") {
+          if (type === "dict") {
+            const key = value;
+            const val = data[key];
+            return { print: true, text: `key: "${key}"  value: "${val}"` };
+          }
+          return { print: true, text: value };
+        }
+        if (mode === "if")
+          return len > 3
+            ? { print: true, text: `Long: ${value}` }
+            : { print: false };
+        if (mode === "ifelse_char") {
+          const hasA = strVal.toLowerCase().includes("a");
+          return {
+            print: true,
+            text: hasA
+              ? `${value} contains 'a'`
+              : `${value} does not contain 'a'`,
+          };
+        }
+        if (mode === "elif_len") {
+          if (len <= 4)
+            return { print: true, text: `${value} is a short word` };
+          if (len <= 6)
+            return { print: true, text: `${value} is a medium word` };
+          return { print: true, text: `${value} is a long word` };
+        }
+        return { print: false };
+      }
+
       function reset() {
         data = parseInput();
         const type = dataTypeSelect.value;
-        const iterable = type === "dict" ? Object.entries(data) : data;
+        const iterable = type === "dict" ? Object.keys(data) : data;
         totalSteps = iterable.length;
         step = 0;
         iterator = iterable[Symbol.iterator]();
+        buildCode();
         renderArray();
         currentValueEl.textContent = 'Click "Next Step" to begin...';
         statusEl.textContent = "Ready";
         stepCounter.textContent = `Step 0 / ${totalSteps}`;
         highlightLine(2);
-        document.getElementById("pointer").style.opacity = "0";
+        const pointer = document.getElementById("pointer");
+        if (pointer) pointer.style.opacity = "0";
         clearInterval(interval);
         isPlaying = false;
         playBtn.textContent = "Play";
@@ -546,12 +619,15 @@
         highlightBox(index);
         movePointer(index);
 
-        let displayValue = Array.isArray(value)
-          ? `"${value[0]}": "${value[1]}"`
-          : value;
+        currentValueEl.innerHTML = `<span style="color:#e67e22">i</span> = <span style="color:#27ae60">${value}</span>`;
 
-        currentValueEl.innerHTML = `<span style="color:#e67e22">i</span> = <span style="color:#27ae60">${displayValue}</span>`;
-        statusEl.innerHTML = `<span style="font-family: monospace;">print the value</span> → <span style="color:#27ae60">"${displayValue}"</span>`;
+        const { print, text } = shouldPrint(value);
+        if (print) {
+          statusEl.innerHTML = `print → <span style="color:#27ae60">"${text}"</span>`;
+        } else {
+          statusEl.innerHTML = `<span style="color:#95a5a6">condition false → skip</span>`;
+        }
+
         stepCounter.textContent = `Step ${step + 1} / ${totalSteps}`;
         step++;
       }
@@ -577,8 +653,7 @@
 
       function cycleSpeed() {
         const order = ["slow", "medium", "fast"];
-        const idx = order.indexOf(currentSpeed);
-        currentSpeed = order[(idx + 1) % 3];
+        currentSpeed = order[(order.indexOf(currentSpeed) + 1) % 3];
         speedBtn.textContent = `Speed: ${
           currentSpeed.charAt(0).toUpperCase() + currentSpeed.slice(1)
         }`;
@@ -591,7 +666,7 @@
       function downloadImage() {
         html2canvas(document.querySelector(".container")).then((canvas) => {
           const link = document.createElement("a");
-          link.download = `for-loop-${dataTypeSelect.value}.png`;
+          link.download = `for-loop-${dataTypeSelect.value}-${mode}.png`;
           link.href = canvas.toDataURL();
           link.click();
         });
@@ -603,10 +678,12 @@
         themeBtn.textContent = isDark ? "Dark Mode" : "Light Mode";
       }
 
+      // Events
       dataTypeSelect.addEventListener("change", () => {
         inputValues.value = defaults[dataTypeSelect.value];
         reset();
       });
+      controlFlowSelect.addEventListener("change", reset);
       updateBtn.addEventListener("click", reset);
       nextBtn.addEventListener("click", nextStep);
       resetBtn.addEventListener("click", reset);
@@ -615,7 +692,10 @@
       downloadBtn.addEventListener("click", downloadImage);
       themeBtn.addEventListener("click", toggleTheme);
 
+      // INIT — DEFAULT: LIST + SIMPLE FOR LOOP
       inputValues.value = defaults.list;
+      dataTypeSelect.value = "list";
+      controlFlowSelect.value = "simple"; // ← NOW DEFAULT IS SIMPLE LOOP
       reset();
     </script>
   </body>
