@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pseudocode Visualizer — Study Mode</title>
+
+    <style>
+      body {
+        font-family: "Poppins", "Segoe UI", sans-serif;
+        margin: 0;
+        padding: 40px;
+        background: linear-gradient(180deg, #f1f5f9, #e2e8f0);
+        color: #1e293b;
+        min-height: 100vh;
+      }
+
+      h1 {
+        text-align: center;
+        color: #1e40af;
+        font-size: 34px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+
+      .question-box {
+        max-width: 900px;
+        margin: 0 auto 35px auto;
+        padding: 18px 28px;
+        border-radius: 14px;
+        text-align: center;
+        background: linear-gradient(90deg, #3b82f6, #2563eb);
+        color: #f8fafc;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+        font-size: 20px;
+        line-height: 1.6;
+      }
+
+      .question-box strong {
+        color: #facc15;
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 25px;
+      }
+
+      .box {
+        flex: 1 1 420px;
+        background: #0f172a;
+        color: #e2e8f0;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        min-width: 400px;
+        transition: transform 0.3s;
+      }
+
+      .box:hover {
+        transform: translateY(-4px);
+      }
+
+      .box h3 {
+        margin-top: 0;
+        color: #60a5fa;
+        font-size: 22px;
+        border-bottom: 2px solid #2563eb;
+        padding-bottom: 6px;
+      }
+
+      pre {
+        font-family: "Fira Code", "Consolas", monospace;
+        font-size: 18px;
+        line-height: 1.8;
+      }
+
+      .line {
+        padding: 5px 10px;
+        border-radius: 6px;
+        transition: all 0.25s ease-in-out;
+      }
+
+      .line.highlight {
+        background: rgba(56, 189, 248, 0.2);
+        border-left: 5px solid #38bdf8;
+        color: #ecfeff;
+        font-weight: 600;
+      }
+
+      .controls {
+        text-align: center;
+        margin-top: 28px;
+      }
+
+      button {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 12px 22px;
+        margin: 6px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+
+      button:hover {
+        background: #1d4ed8;
+        transform: scale(1.05);
+      }
+
+      button:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+      }
+
+      .vars {
+        margin: 35px auto 0;
+        background: #f8fafc;
+        border-radius: 10px;
+        max-width: 880px;
+        padding: 18px 24px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        font-size: 20px;
+      }
+
+      .vars strong {
+        color: #1e3a8a;
+      }
+
+      .output {
+        margin-top: 15px;
+        background: #e0f2fe;
+        color: #1e3a8a;
+        border-radius: 10px;
+        padding: 14px;
+        font-weight: 700;
+        text-align: center;
+        font-size: 22px;
+      }
+
+      .stepinfo {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 18px;
+        color: #334155;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Pseudocode Visualizer</h1>
+
+    <div class="question-box">
+      <strong>Question:</strong> Find the <strong>maximum number</strong> in a
+      given list of numbers.
+    </div>
+
+    <div class="row">
+      <div class="box">
+        <h3>Pseudocode</h3>
+        <pre id="pseudocode"></pre>
+      </div>
+
+      <div class="box">
+        <h3>Python Code</h3>
+        <pre id="pythoncode"></pre>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="prevBtn" onclick="prevStep()">⏮ Prev</button>
+      <button id="nextBtn" onclick="nextStep()">Next ⏭</button>
+      <button onclick="resetAll()">🔁 Reset</button>
+    </div>
+
+    <div class="stepinfo">
+      Step <span id="stepLabel">0</span> of <span id="stepTotal">0</span>
+    </div>
+
+    <div class="vars">
+      <div>
+        <strong>Variables:</strong>
+        <span id="varsContent">Ready to begin...</span>
+      </div>
+      <div class="output" id="outputBox"></div>
+    </div>
+
+    <script>
+      const pseudoLines = [
+        "BEGIN",
+        "  INPUT numbers",
+        "  max ← first number",
+        "  FOR each num IN numbers",
+        "      IF num > max THEN",
+        "          max ← num",
+        "      END IF",
+        "  END FOR",
+        "  OUTPUT max",
+        "END",
+      ];
+
+      const pyLines = [
+        "numbers = [4, 8, 2, 10, 3]",
+        "max = numbers[0]",
+        "for num in numbers:",
+        "    if num > max:",
+        "        max = num",
+        "print(max)",
+      ];
+
+      const steps = [
+        { pseudo: 1, py: 0, vars: { numbers: [4, 8, 2, 10, 3] } },
+        { pseudo: 2, py: 1, vars: { max: 4 } },
+        { pseudo: 3, py: 2, vars: { num: 4 } },
+        { pseudo: 4, py: 3, vars: { num: 8 }, cond: true, update: { max: 8 } },
+        { pseudo: 3, py: 2, vars: { num: 2 }, cond: false },
+        {
+          pseudo: 4,
+          py: 3,
+          vars: { num: 10 },
+          cond: true,
+          update: { max: 10 },
+        },
+        { pseudo: 3, py: 2, vars: { num: 3 }, cond: false },
+        { pseudo: 8, py: 5, output: "✅ Maximum = 10", vars: { max: 10 } },
+      ];
+
+      let current = -1;
+      const total = steps.length;
+
+      const pseudoBox = document.getElementById("pseudocode");
+      const pythonBox = document.getElementById("pythoncode");
+      const varsContent = document.getElementById("varsContent");
+      const outputBox = document.getElementById("outputBox");
+      const stepLabel = document.getElementById("stepLabel");
+      const stepTotal = document.getElementById("stepTotal");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+
+      stepTotal.textContent = total;
+
+      function render(pHighlight = -1, pyHighlight = -1) {
+        pseudoBox.innerHTML = pseudoLines
+          .map(
+            (line, i) =>
+              `<div class="line ${
+                i === pHighlight ? "highlight" : ""
+              }">${line}</div>`
+          )
+          .join("");
+
+        pythonBox.innerHTML = pyLines
+          .map(
+            (line, i) =>
+              `<div class="line ${
+                i === pyHighlight ? "highlight" : ""
+              }">${line}</div>`
+          )
+          .join("");
+      }
+
+      function showVars(v) {
+        if (!v) {
+          varsContent.textContent = "Ready to begin...";
+          return;
+        }
+        varsContent.textContent = JSON.stringify(v);
+      }
+
+      function nextStep() {
+        if (current >= total - 1) return;
+        current++;
+        applyStep();
+      }
+
+      function prevStep() {
+        if (current <= -1) return;
+        current--;
+        applyStep();
+      }
+
+      function resetAll() {
+        current = -1;
+        render();
+        showVars(null);
+        outputBox.textContent = "";
+        updateButtons();
+      }
+
+      function applyStep() {
+        const s = steps[current];
+        render(s.pseudo, s.py);
+        showVars(s.vars);
+        if (s.update)
+          varsContent.textContent += " → Updated: " + JSON.stringify(s.update);
+        if (typeof s.cond !== "undefined")
+          varsContent.textContent += `  (Condition: ${
+            s.cond ? "True ✅" : "False ❌"
+          })`;
+        outputBox.textContent = s.output ? s.output : "";
+        updateButtons();
+      }
+
+      function updateButtons() {
+        stepLabel.textContent = current + 1;
+        prevBtn.disabled = current <= -1;
+        nextBtn.disabled = current >= total - 1;
+      }
+
+      render();
+      updateButtons();
+    </script>
+  </body>
+</html>
