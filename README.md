@@ -20,6 +20,7 @@ Ollama installed
 Qwen 2.5 Coder model installed (required)
 
 Docker
+
 Installation
 1. Clone the Repository
 git clone https://github.com/nandanap24/ai_tutor.git
