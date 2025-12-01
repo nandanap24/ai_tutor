@@ -34,3 +34,27 @@ db.employees.find({bonus: {$exists: true}})
   }
 ]
 */
+db.employees.find({bonus: {$exists: false}})
+
+/*  
+[
+  {
+    _id: 3,
+    name: 'Emily Johnson',
+    age: 41,
+    position: 'CTO',
+    salary: 150000,
+    department: 'Management',
+    hire_date: ISODate('2015-03-12T00:00:00.000Z')
+  },
+  {
+    _id: 5,
+    name: 'Sarah Davis',
+    age: 26,
+    position: 'UI/UX Designer',
+    salary: 70000,
+    department: 'Design',
+    hire_date: ISODate('2022-10-12T00:00:00.000Z')
+  }
+]
+*/
