@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Pseudocode Writing Guide — Interactive (Multi-question)</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ===== THEME TOKENS ===== */
+      :root {
+        --bg-main: #c9dcf7;
+        --bg-card: #e4eefb;
+        --accent: #5b8def;
+        --accent-2: #3c6ac7;
+        --text: #0f1724; /* darker for large text */
+        --muted: #475569;
+        --glass-border: rgba(0, 0, 0, 0.06);
+
+        /* sizing increased significantly as requested */
+        --card-radius: 22px;
+        --card-padding: 52px; /* larger padding */
+        --site-max-width: 1240px;
+        --icon-size: 54px;
+        --heading-xxl: 4.2rem;
+        --heading-xl: 2.8rem;
+        --heading-lg: 2.2rem;
+        --body-lg: 1.35rem;
+        --lead-size: 1.2rem;
+
+        --reveal-distance: 40px; /* high animation */
+        --reveal-duration: 1s;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--bg-main);
+        color: var(--text);
+        font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        padding: 48px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .site {
+        width: 100%;
+        max-width: var(--site-max-width);
+      }
+
+      /* ===== HEADER ===== */
+      header {
+        text-align: center;
+        margin-bottom: 34px;
+      }
+      header h1 {
+        font-size: var(--heading-xxl);
+        line-height: 1.02;
+        margin: 0;
+        font-weight: 900;
+        color: var(--text);
+      }
+      header p {
+        margin: 14px 0 0;
+        color: var(--muted);
+        font-weight: 700;
+        font-size: var(--body-lg);
+      }
+
+      .wave {
+        display: block;
+        width: 100%;
+        overflow: hidden;
+        line-height: 0;
+      }
+      .wave svg {
+        display: block;
+        width: 100%;
+        height: 80px;
+      }
+
+      /* ===== section layout ===== */
+      section {
+        position: relative;
+        padding: 44px 0 52px;
+      }
+      .section-inner {
+        display: grid;
+        grid-template-columns: 1fr 460px; /* larger aside */
+        gap: 40px;
+        align-items: start;
+      }
+      @media (max-width: 980px) {
+        .section-inner {
+          grid-template-columns: 1fr;
+          padding: 0 8px;
+        }
+      }
+
+      /* ===== floating cards ===== */
+      .card {
+        background: var(--bg-card);
+        border-radius: var(--card-radius);
+        padding: var(--card-padding);
+        margin: 28px 0;
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 36px 86px rgba(28, 43, 80, 0.08),
+          0 12px 28px rgba(28, 43, 80, 0.04);
+        transition: transform 0.32s cubic-bezier(0.2, 0.9, 0.3, 1),
+          box-shadow 0.32s ease;
+      }
+      .card:hover {
+        transform: translateY(-14px);
+        box-shadow: 0 52px 110px rgba(28, 43, 80, 0.12);
+      }
+
+      .card .title {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 20px;
+      }
+      .card h2 {
+        font-size: var(--heading-lg);
+        margin: 0;
+        color: var(--text);
+        font-weight: 900;
+      }
+      .card p {
+        color: var(--muted);
+        font-size: var(--body-lg);
+        line-height: 1.8;
+        margin: 0 0 14px;
+      }
+
+      .lead-strong {
+        font-weight: 800;
+        color: var(--text);
+        font-size: var(--lead-size);
+      }
+
+      ul.clean {
+        margin: 20px 0 0;
+        padding-left: 22px;
+        color: var(--muted);
+      }
+      ul.clean li {
+        margin: 14px 0;
+        font-size: var(--body-lg);
+      }
+      ul.clean li::marker {
+        color: var(--accent);
+      }
+
+      /* ===== aside column ===== */
+      .aside {
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+      }
+      .mini {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.95),
+          rgba(255, 255, 255, 0.9)
+        );
+        padding: 20px;
+        border-radius: 14px;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: 0 14px 34px rgba(28, 43, 80, 0.03);
+      }
+      .mini h4 {
+        margin: 0 0 8px;
+        font-size: 1.1rem;
+        color: var(--text);
+        font-weight: 800;
+      }
+      .mini p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1rem;
+      }
+
+      /* ===== example box (filled) ===== */
+      .example-box {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.94),
+          rgba(255, 255, 255, 0.9)
+        );
+        border-radius: 14px;
+        padding: 18px;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        min-height: 260px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        justify-content: center;
+      }
+      .example-box pre {
+        background: rgba(10, 40, 120, 0.04);
+        padding: 16px;
+        border-radius: 12px;
+        overflow: auto;
+        font-family: "Courier New", monospace;
+        font-size: 1.12rem;
+        color: #0b2340;
+        margin: 0;
+      }
+      .example-box .caption {
+        font-size: 1rem;
+        color: var(--muted);
+        text-align: center;
+        margin-top: 8px;
+      }
+
+      /* ===== rule-card ===== */
+      .rule-card {
+        background: var(--bg-card);
+        border-left: 10px solid var(--accent);
+        padding: 22px;
+        border-radius: 14px;
+        margin: 18px 0;
+      }
+      .rule-card h3 {
+        margin: 0 0 8px;
+        color: var(--accent-2);
+        font-size: 1.15rem;
+        font-weight: 800;
+      }
+      .rule-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      /* ===== keyword table ===== */
+      .keyword-table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--bg-card);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+      }
+      .keyword-table th {
+        padding: 16px 18px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        color: white;
+        font-weight: 900;
+        text-align: left;
+        font-size: 1.05rem;
+      }
+      .keyword-table td {
+        padding: 16px 18px;
+        border-top: 1px solid rgba(0, 0, 0, 0.03);
+        font-size: 1.05rem;
+        color: var(--text);
+      }
+
+      /* ===== CTA button ===== */
+      .cta {
+        display: inline-block;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        color: white;
+        padding: 12px 18px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 900;
+        box-shadow: 0 12px 32px rgba(60, 106, 199, 0.14);
+        transition: transform 0.14s ease;
+      }
+      .cta:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 44px rgba(60, 106, 199, 0.2);
+      }
+
+      /* big start button (bottom) */
+      .start-btn {
+        display: block;
+        width: 600px;
+        max-width: 95%;
+        margin: 48px auto 36px;
+        padding: 20px 28px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: white;
+        text-align: center;
+        font-size: 1.55rem;
+        font-weight: 800;
+        text-decoration: none;
+        border-radius: 999px;
+        box-shadow: 0 20px 60px rgba(60, 106, 199, 0.18);
+        transition: all 0.28s ease;
+      }
+      .start-btn:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 36px 90px rgba(60, 106, 199, 0.22);
+      }
+
+      /* ===== small icons ===== */
+      .icon {
+        width: var(--icon-size);
+        height: var(--icon-size);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.85),
+          rgba(255, 255, 255, 0.7)
+        );
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: 0 12px 28px rgba(28, 43, 80, 0.03);
+      }
+
+      /* ===== reveal (HIGH) ===== */
+      .reveal {
+        opacity: 0;
+        transform: translateY(var(--reveal-distance)) scale(0.995);
+        transition: opacity var(--reveal-duration)
+            cubic-bezier(0.2, 0.9, 0.24, 1),
+          transform var(--reveal-duration) cubic-bezier(0.2, 0.9, 0.24, 1);
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      /* ===== quiz component (multi-step) ===== */
+      .quiz {
+        margin-top: 22px;
+        padding: 18px;
+        border-radius: 14px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.98),
+          rgba(255, 255, 255, 0.94)
+        );
+        border: 1px solid rgba(0, 0, 0, 0.04);
+      }
+      .quiz h4 {
+        margin: 0 0 12px;
+        font-size: 1.18rem;
+        color: var(--text);
+        font-weight: 800;
+      }
+      .question-count {
+        font-size: 0.98rem;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .option-btn {
+        text-align: left;
+        padding: 14px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        background: white;
+        cursor: pointer;
+        font-size: 1.04rem;
+      }
+      .option-btn:hover {
+        box-shadow: 0 10px 28px rgba(28, 43, 80, 0.06);
+        transform: translateY(-3px);
+      }
+      .option-btn.correct {
+        background: linear-gradient(90deg, #dff4e4, #e6fbef);
+        border-color: #7fc57f;
+      }
+      .option-btn.wrong {
+        background: linear-gradient(90deg, #fdecea, #fff0f0);
+        border-color: #f09a9a;
+      }
+      .quiz .controls {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 12px;
+      }
+      .btn-ghost {
+        background: transparent;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 10px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .btn-primary {
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        color: white;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 900;
+      }
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .feedback {
+        margin-top: 12px;
+        font-weight: 800;
+      }
+      .score {
+        margin-top: 10px;
+        color: var(--muted);
+        font-weight: 800;
+      }
+
+      /* ===== final modal ===== */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(8, 12, 24, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s ease;
+      }
+      .modal-backdrop.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modal {
+        width: 94%;
+        max-width: 720px;
+        background: var(--bg-card);
+        border-radius: 16px;
+        padding: 28px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 40px 120px rgba(8, 12, 24, 0.4);
+      }
+      .modal h3 {
+        margin: 0 0 10px;
+        font-size: 1.6rem;
+      }
+      .modal .details {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .modal .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 800;
+        font-size: 1.05rem;
+      }
+      .modal .summary-total {
+        font-size: 1.25rem;
+        margin-top: 14px;
+        color: var(--accent-2);
+        font-weight: 900;
+      }
+      .modal .modal-actions {
+        text-align: right;
+        margin-top: 18px;
+      }
+      .modal .btn {
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: 800;
+      }
+      .btn-close {
+        background: #f3f4f6;
+        color: var(--text);
+        margin-right: 10px;
+      }
+      .btn-retry {
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        color: white;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 34px;
+        color: var(--muted);
+        font-weight: 800;
+      }
+
+      @media (max-width: 540px) {
+        header h1 {
+          font-size: 2.6rem;
+        }
+        .card h2 {
+          font-size: 1.6rem;
+        }
+        .card p {
+          font-size: 1.02rem;
+        }
+        .example-box {
+          min-height: 200px;
+        }
+        .start-btn {
+          width: 92%;
+          font-size: 1.15rem;
+          padding: 16px;
+        }
+      }
+      /* ---------- Right column: larger, clearer text (override) ---------- */
+      .aside .mini {
+        padding: 28px; /* a little more breathing room */
+        border-radius: 14px;
+        min-width: 260px;
+      }
+
+      .aside .mini h4 {
+        font-size: 1.35rem; /* bigger title */
+        line-height: 1.05;
+        margin-bottom: 10px;
+        font-weight: 900;
+        color: var(--text);
+      }
+
+      .aside .mini p {
+        font-size: 1.12rem; /* bigger paragraph text */
+        line-height: 1.65;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      /* Example box (right side) - increase code and caption sizes to match */
+      .example-box {
+        padding: 22px;
+        min-height: 320px; /* slightly taller to fit bigger text */
+      }
+
+      .example-box pre {
+        font-size: 1.18rem; /* larger monospace code */
+        line-height: 1.6;
+        padding: 18px;
+        border-radius: 12px;
+      }
+
+      .example-box .caption {
+        font-size: 1.05rem; /* larger caption */
+        color: var(--muted);
+        margin-top: 12px;
+      }
+
+      /* Make the tiny icons (if any) feel proportionate */
+      .icon {
+        width: 64px;
+        height: 64px;
+      }
+
+      /* For very small screens reduce the lift but keep bigger text */
+      @media (max-width: 540px) {
+        .aside .mini h4 {
+          font-size: 1.18rem;
+        }
+        .aside .mini p {
+          font-size: 1rem;
+        }
+        .example-box pre {
+          font-size: 1.02rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="site">
+      <header>
+        <h1>PseudoGuide<br /><span style="font-weight: 700"></span></h1>
+        <p>Learn, practice, and test your pseudocode skills</p>
+      </header>
+
+      <!-- WHAT SECTION -->
+      <section class="reveal" id="what-section" aria-labelledby="what-heading">
+        <div class="section-inner">
+          <article class="card" id="what">
+            <div class="title">
+              <span class="icon" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M3 6h13v13H3z"
+                    stroke="#3c6ac7"
+                    stroke-width="1.4"
+                    fill="#eaf3ff"
+                  />
+                  <path d="M20 7v10" stroke="#5b8def" stroke-width="1.6" />
+                </svg>
+              </span>
+              <h2 id="what-heading">What is Pseudocode?</h2>
+            </div>
+
+            <p>
+              <span class="lead-strong">Pseudocode</span> is like a
+              <strong>recipe</strong> for your program written in plain English.
+              Use it to design the logic before writing code.
+            </p>
+
+            <p class="lead-strong" style="margin-top: 12px">
+              Think of it this way:
+            </p>
+            <ul class="clean">
+              <li>Building a house → you need a blueprint first</li>
+              <li>Cooking a meal → you need a recipe first</li>
+              <li>Writing a program → you need pseudocode first</li>
+            </ul>
+
+            <!-- MULTI-QUESTION QUIZ: WHAT -->
+            <div class="quiz" data-quiz-id="what">
+              <h4>Quick quiz — What is pseudocode?</h4>
+              <div class="question-count"></div>
+
+              <div class="question-area">
+                <!-- dynamic question will be injected here -->
+              </div>
+
+              <div class="controls">
+                <button class="btn-ghost btn-prev" disabled>Previous</button>
+                <button class="btn-primary btn-next" disabled>Next</button>
+                <button class="btn-primary btn-submit" style="display: none">
+                  Submit Section
+                </button>
+              </div>
+
+              <div class="feedback" aria-live="polite"></div>
+              <div class="score"></div>
+            </div>
+          </article>
+
+          <aside class="aside">
+            <div class="mini">
+              <h4>Quick tip</h4>
+              <p>
+                Write steps in short sentences. Keep keywords like
+                <strong>IF</strong>, <strong>FOR</strong>, and
+                <strong>INPUT</strong> in caps to stand out.
+              </p>
+            </div>
+
+            <div class="example-box">
+              <div style="font-weight: 800; color: var(--accent-2)">
+                Example: Sum of an array
+              </div>
+              <pre>
+FUNCTION SUM_ARRAY(arr)
+    SET total = 0
+    FOR each item IN arr DO 
+        total = total + item
+    END FOR
+    RETURN total
+END FUNCTION
+              </pre>
+              <div class="caption">Small examples help bridge idea → code.</div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <div class="wave" aria-hidden="true">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+          <path
+            d="M0,40 C360,0 1080,80 1440,40 L1440,80 L0,80 Z"
+            fill="rgba(255,255,255,0.28)"
+          ></path>
+        </svg>
+      </div>
+
+      <!-- WHY SECTION -->
+      <section class="reveal" id="why-section" aria-labelledby="why-heading">
+        <div class="section-inner">
+          <article class="card" id="why">
+            <div class="title">
+              <span class="icon" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24">
+                  <path
+                    d="M12 2a6 6 0 00-4 10.7V15a2 2 0 002 2h4a2 2 0 002-2v-2.3A6 6 0 0012 2z"
+                    stroke="#5b8def"
+                    stroke-width="1.4"
+                    fill="#eaf3ff"
+                  />
+                </svg>
+              </span>
+              <h2 id="why-heading">Why Use Pseudocode?</h2>
+            </div>
+
+            <ul class="clean">
+              <li>No confusing syntax — just clear English</li>
+              <li>Catch logic errors early</li>
+              <li>Plan step-by-step solutions</li>
+              <li>Easy to explain to teammates</li>
+              <li>Language-independent</li>
+            </ul>
+
+            <!-- MULTI-QUESTION QUIZ: WHY -->
+            <div class="quiz" data-quiz-id="why">
+              <h4>Quick quiz — Why use pseudocode?</h4>
+              <div class="question-count"></div>
+              <div class="question-area"></div>
+
+              <div class="controls">
+                <button class="btn-ghost btn-prev" disabled>Previous</button>
+                <button class="btn-primary btn-next" disabled>Next</button>
+                <button class="btn-primary btn-submit" style="display: none">
+                  Submit Section
+                </button>
+              </div>
+
+              <div class="feedback" aria-live="polite"></div>
+              <div class="score"></div>
+            </div>
+          </article>
+
+          <aside class="aside">
+            <div class="mini">
+              <h4>Use this when</h4>
+              <p>
+                Designing algorithms, preparing interview solutions, or
+                explaining logic to peers.
+              </p>
+            </div>
+
+            <div class="mini">
+              <h4>Pro tip</h4>
+              <p>
+                Keep lines short and use indentation to show nested logic —
+                treat pseudocode like readable prose.
+              </p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <div
+        class="wave"
+        aria-hidden="true"
+        style="transform: rotate(180deg); margin-top: -20px"
+      >
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+          <path
+            d="M0,40 C360,0 1080,80 1440,40 L1440,80 L0,80 Z"
+            fill="rgba(255,255,255,0.28)"
+          ></path>
+        </svg>
+      </div>
+
+      <!-- RULES SECTION -->
+      <section
+        class="reveal"
+        id="rules-section"
+        aria-labelledby="rules-heading"
+      >
+        <div class="section-inner">
+          <article class="card" id="rules">
+            <div class="title">
+              <span class="icon" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z"
+                    fill="#eaf3ff"
+                    stroke="#3c6ac7"
+                    stroke-width="1.2"
+                  />
+                </svg>
+              </span>
+              <h2 id="rules-heading">Rules for Writing Pseudocode</h2>
+            </div>
+
+            <div class="rule-card">
+              <h3>Write in plain English — keep structure</h3>
+              <p>Short statements, clear verbs, indentation for nesting.</p>
+            </div>
+
+            <div class="rule-card">
+              <h3>Use CLEAR KEYWORDS</h3>
+              <p>IF, FOR, WHILE, INPUT, PRINT — use CAPS for clarity.</p>
+            </div>
+
+            <div class="rule-card">
+              <h3>Be specific but not code</h3>
+              <p>
+                Avoid exact syntax — aim for clarity rather than runnable code.
+              </p>
+            </div>
+
+            <!-- MULTI-QUESTION QUIZ: RULES -->
+            <div class="quiz" data-quiz-id="rules">
+              <h4>Quick quiz — Pseudocode rules</h4>
+              <div class="question-count"></div>
+              <div class="question-area"></div>
+
+              <div class="controls">
+                <button class="btn-ghost btn-prev" disabled>Previous</button>
+                <button class="btn-primary btn-next" disabled>Next</button>
+                <button class="btn-primary btn-submit" style="display: none">
+                  Submit Section
+                </button>
+              </div>
+
+              <div class="feedback" aria-live="polite"></div>
+              <div class="score"></div>
+            </div>
+          </article>
+
+          <aside class="aside">
+            <div class="mini">
+              <h4>Common Keywords</h4>
+              <p>
+                <strong>INPUT</strong>, <strong>OUTPUT</strong>,
+                <strong>SET</strong>, <strong>IF</strong>, <strong>FOR</strong>,
+                <strong>WHILE</strong>
+              </p>
+            </div>
+
+            <div class="mini">
+              <h4>View pseudocode flow</h4>
+              <!-- CHANGED: right-side CTA now opens pseudocode visualizer page -->
+              <p>
+                <a class="cta" href="pseudocode.html">View pseudocode flow</a>
+              </p>
+            </div>
+          </aside>
+        </div>
+
+        <!-- keywords table full width -->
+        <div style="margin-top: 26px">
+          <table
+            class="keyword-table"
+            role="table"
+            aria-label="Pseudocode keywords"
+          >
+            <thead>
+              <tr>
+                <th>Purpose</th>
+                <th>Keywords</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Input</td>
+                <td>INPUT, READ, GET, ASK</td>
+              </tr>
+              <tr>
+                <td>Output</td>
+                <td>OUTPUT, PRINT, DISPLAY, SHOW</td>
+              </tr>
+              <tr>
+                <td>Variables</td>
+                <td>SET, LET, INITIALIZE</td>
+              </tr>
+              <tr>
+                <td>Decisions</td>
+                <td>IF, THEN, ELSE, ELSE IF</td>
+              </tr>
+              <tr>
+                <td>Loops</td>
+                <td>FOR, WHILE, REPEAT, DO</td>
+              </tr>
+              <tr>
+                <td>Functions</td>
+                <td>FUNCTION, CALL, RETURN</td>
+              </tr>
+              <tr>
+                <td>Math</td>
+                <td>ADD, SUBTRACT, MULTIPLY, DIVIDE</td>
+              </tr>
+              <tr>
+                <td>Comparison</td>
+                <td>EQUALS, GREATER THAN, LESS THAN</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- BIG START BUTTON: links to levels.html -->
+        <a class="start-btn" href="levels.html">Let's Practice</a>
+        <!-- NOTE: If you named your practice page "practise.html" (British spelling),
+             update levels.html to point to the same spelling OR rename the file.
+             levels.html originally links to "practice.html?level=easy" in your earlier code. -->
+      </section>
+
+      <footer>© 2025 AI Tutoring Platform</footer>
+    </div>
+
+    <!-- FINAL SCORE MODAL -->
+    <div
+      id="finalModal"
+      class="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      style="display: none"
+    >
+      <div class="modal" role="document" aria-labelledby="modal-title">
+        <h3 id="modal-title">Your Quiz Summary</h3>
+        <div class="details" id="modal-details">
+          <!-- filled dynamically -->
+        </div>
+        <div class="summary-total" id="modal-total"></div>
+        <div class="modal-actions">
+          <button class="btn btn-close" id="closeModal">Close</button>
+          <button class="btn btn-retry" id="retryAll">Retry All</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== Scripts: Reveal + Quiz logic (multi-question) ====== -->
+    <script>
+      // ===== Reveal (HIGH) =====
+      (function () {
+        const reveals = document.querySelectorAll(".reveal");
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add("visible");
+                io.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.12 }
+        );
+        reveals.forEach((r) => io.observe(r));
+      })();
+
+      // ===== QUIZ DATA: 3 questions per section =====
+      const QUIZ_BANK = {
+        what: [
+          {
+            q: "What best describes pseudocode?",
+            choices: {
+              a: "Plain-English plan for a program",
+              b: "Compiled code",
+              c: "Design mockup",
+            },
+            correct: "a",
+          },
+          {
+            q: "Pseudocode should be:",
+            choices: {
+              a: "Exact language syntax",
+              b: "Readable steps and structure",
+              c: "Only diagrams",
+            },
+            correct: "b",
+          },
+          {
+            q: "Pseudocode is mainly used to:",
+            choices: {
+              a: "Run on servers",
+              b: "Plan algorithms",
+              c: "Create UI styles",
+            },
+            correct: "b",
+          },
+        ],
+        why: [
+          {
+            q: "One benefit of pseudocode is:",
+            choices: {
+              a: "Catching logic errors early",
+              b: "Automatically optimizing code",
+              c: "Replacing documentation",
+            },
+            correct: "a",
+          },
+          {
+            q: "Pseudocode helps when:",
+            choices: {
+              a: "Designing algorithms",
+              b: "Formatting images",
+              c: "Generating tests automatically",
+            },
+            correct: "a",
+          },
+          {
+            q: "Pseudocode is language:",
+            choices: { a: "Dependent", b: "Independent", c: "Compiled" },
+            correct: "b",
+          },
+        ],
+        rules: [
+          {
+            q: "Good pseudocode uses:",
+            choices: {
+              a: "Clear keywords and indentation",
+              b: "Very long complex sentences",
+              c: "Unstructured paragraphs",
+            },
+            correct: "a",
+          },
+          {
+            q: "Should pseudocode contain exact semicolons and compiler-specific syntax?",
+            choices: { a: "Yes", b: "Sometimes", c: "No — avoid exact syntax" },
+            correct: "c",
+          },
+          {
+            q: "Keywords to emphasize in pseudocode include:",
+            choices: { a: "IF, FOR, WHILE", b: "HTML, CSS", c: "PNG, JPG" },
+            correct: "a",
+          },
+        ],
+      };
+
+      // ===== STATE: track per-section progress and answers =====
+      const state = {
+        what: { index: 0, answers: [], score: 0, answeredAtIndex: undefined },
+        why: { index: 0, answers: [], score: 0, answeredAtIndex: undefined },
+        rules: { index: 0, answers: [], score: 0, answeredAtIndex: undefined },
+      };
+
+      // Utility to count answered (non-null / non-empty) answers for a section
+      function countAnswered(quizId) {
+        return (state[quizId].answers || []).filter(Boolean).length;
+      }
+
+      // Utility to check if all sections completed (all questions answered)
+      function allSectionsCompleted() {
+        return ["what", "why", "rules"].every(
+          (id) => countAnswered(id) === QUIZ_BANK[id].length
+        );
+      }
+
+      // Utility to create DOM for a question
+      function renderQuestion(quizEl, quizId) {
+        const data = QUIZ_BANK[quizId];
+        const st = state[quizId];
+        const idx = st.index;
+        const qObj = data[idx];
+
+        const questionArea = quizEl.querySelector(".question-area");
+        const countEl = quizEl.querySelector(".question-count");
+        questionArea.innerHTML = "";
+
+        countEl.textContent = `Question ${idx + 1} of ${data.length}`;
+
+        const qTitle = document.createElement("div");
+        qTitle.style.fontWeight = "800";
+        qTitle.style.marginBottom = "10px";
+        qTitle.style.fontSize = "1.06rem";
+        qTitle.textContent = qObj.q;
+        questionArea.appendChild(qTitle);
+
+        const options = document.createElement("div");
+        options.className = "options";
+        for (const key of Object.keys(qObj.choices)) {
+          const btn = document.createElement("button");
+          btn.className = "option-btn";
+          btn.type = "button";
+          btn.dataset.value = key;
+          btn.textContent = `${key.toUpperCase()}. ${qObj.choices[key]}`;
+          btn.addEventListener("click", () =>
+            handleOptionClick(quizEl, quizId, btn, qObj.correct)
+          );
+          options.appendChild(btn);
+        }
+        questionArea.appendChild(options);
+
+        // update controls
+        const btnPrev = quizEl.querySelector(".btn-prev");
+        const btnNext = quizEl.querySelector(".btn-next");
+        const btnSubmit = quizEl.querySelector(".btn-submit");
+        // disable next until answered
+        btnNext.disabled = true;
+        btnPrev.disabled = idx === 0;
+        btnSubmit.style.display =
+          idx === data.length - 1 ? "inline-block" : "none";
+        btnNext.style.display =
+          idx === data.length - 1 ? "none" : "inline-block";
+
+        // feedback clear
+        quizEl.querySelector(".feedback").textContent = "";
+        // show answered count (only count non-empty answers)
+        quizEl.querySelector(".score").textContent = `Answered: ${countAnswered(
+          quizId
+        )} / ${data.length}`;
+
+        // If this question was previously answered, restore the UI
+        restoreAnsweredUI(quizEl, quizId);
+      }
+
+      function handleOptionClick(quizEl, quizId, btn, correctValue) {
+        const st = state[quizId];
+        // prevent double answer on same index
+        if (st.answeredAtIndex === st.index) return;
+
+        const options = [...quizEl.querySelectorAll(".option-btn")];
+        options.forEach((o) => (o.disabled = true));
+
+        const val = btn.dataset.value;
+        const feedbackEl = quizEl.querySelector(".feedback");
+        const scoreEl = quizEl.querySelector(".score");
+
+        if (val === correctValue) {
+          btn.classList.add("correct");
+          feedbackEl.textContent = "Correct!";
+          st.score += 1;
+        } else {
+          btn.classList.add("wrong");
+          feedbackEl.textContent =
+            "Not correct — the correct answer is highlighted.";
+          const correctBtn = options.find(
+            (o) => o.dataset.value === correctValue
+          );
+          if (correctBtn) correctBtn.classList.add("correct");
+        }
+
+        // record answer (store at index)
+        st.answers[st.index] = val || null;
+        st.answeredAtIndex = st.index;
+        scoreEl.textContent = `Answered: ${countAnswered(quizId)} / ${
+          QUIZ_BANK[quizId].length
+        }`;
+
+        // enable Next/Submit appropriately
+        const btnNext = quizEl.querySelector(".btn-next");
+        const btnSubmit = quizEl.querySelector(".btn-submit");
+        if (st.index < QUIZ_BANK[quizId].length - 1) {
+          btnNext.disabled = false;
+        } else {
+          btnSubmit.disabled = false;
+        }
+      }
+
+      // navigation handlers for each quiz
+      function initQuizControls(quizEl, quizId) {
+        const btnPrev = quizEl.querySelector(".btn-prev");
+        const btnNext = quizEl.querySelector(".btn-next");
+        const btnSubmit = quizEl.querySelector(".btn-submit");
+
+        btnPrev.addEventListener("click", () => {
+          const st = state[quizId];
+          if (st.index === 0) return;
+          st.index -= 1;
+          // move to previous; don't clear previously saved answers
+          renderQuestion(quizEl, quizId);
+        });
+
+        btnNext.addEventListener("click", () => {
+          const st = state[quizId];
+          if (st.index >= QUIZ_BANK[quizId].length - 1) return;
+          st.index += 1;
+          renderQuestion(quizEl, quizId);
+        });
+
+        btnSubmit.addEventListener("click", () => {
+          finalizeSection(quizEl, quizId);
+          // show modal only after user has submitted this section and all sections are completed
+          if (allSectionsCompleted()) {
+            showFinalModal();
+          } else {
+            focusNextSection(quizId);
+          }
+        });
+      }
+
+      function restoreAnsweredUI(quizEl, quizId) {
+        const st = state[quizId];
+        const idx = st.index;
+        const ans = st.answers[idx];
+        const data = QUIZ_BANK[quizId];
+
+        // if there is a recorded answer, mark buttons accordingly and disable them
+        if (ans) {
+          const options = [...quizEl.querySelectorAll(".option-btn")];
+          options.forEach((o) => {
+            o.disabled = true;
+            o.classList.remove("correct", "wrong");
+          });
+          const chosen = options.find((o) => o.dataset.value === ans);
+          const correctValue = data[idx].correct;
+          if (chosen) {
+            if (ans === correctValue) chosen.classList.add("correct");
+            else chosen.classList.add("wrong");
+          }
+          const correctBtn = options.find(
+            (o) => o.dataset.value === correctValue
+          );
+          if (correctBtn) correctBtn.classList.add("correct");
+          quizEl.querySelector(".feedback").textContent =
+            ans === data[idx].correct
+              ? "Correct!"
+              : "Not correct — the correct answer is highlighted.";
+          quizEl.querySelector(".btn-next").disabled = false;
+          quizEl.querySelector(".btn-submit").disabled =
+            idx !== data.length - 1;
+        } else {
+          // fresh: enable buttons and clear classes
+          const options = [...quizEl.querySelectorAll(".option-btn")];
+          options.forEach((o) => {
+            o.disabled = false;
+            o.classList.remove("correct", "wrong");
+          });
+          quizEl.querySelector(".feedback").textContent = "";
+          quizEl.querySelector(".btn-next").disabled = true;
+          quizEl.querySelector(".btn-submit").disabled =
+            idx !== data.length - 1;
+        }
+        quizEl.querySelector(".score").textContent = `Answered: ${countAnswered(
+          quizId
+        )} / ${data.length}`;
+      }
+
+      function finalizeSection(quizEl, quizId) {
+        // disable controls and show section completed message
+        quizEl
+          .querySelectorAll(".option-btn")
+          .forEach((b) => (b.disabled = true));
+        quizEl
+          .querySelectorAll(".btn-prev, .btn-next, .btn-submit")
+          .forEach((b) => (b.disabled = true));
+        quizEl.querySelector(
+          ".feedback"
+        ).textContent = `Section complete — score: ${state[quizId].score} / ${QUIZ_BANK[quizId].length}`;
+      }
+
+      function focusNextSection(currentId) {
+        const order = ["what", "why", "rules"];
+        const idx = order.indexOf(currentId);
+        const next = order[idx + 1];
+        if (next) {
+          const nextSection = document.getElementById(next + "-section");
+          if (nextSection)
+            nextSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+
+      // Build quiz UI for each quiz container
+      document.querySelectorAll(".quiz").forEach((qEl) => {
+        const quizId = qEl.dataset.quizId;
+        // initialize answers as array with nulls (keeps indices stable)
+        state[quizId].answers = Array(QUIZ_BANK[quizId].length).fill(null);
+        state[quizId].score = 0;
+        state[quizId].index = 0;
+        state[quizId].answeredAtIndex = undefined;
+        renderQuestion(qEl, quizId);
+        initQuizControls(qEl, quizId);
+      });
+
+      // FINAL MODAL logic
+      const modalWrap = document.getElementById("finalModal");
+      const modalDetails = document.getElementById("modal-details");
+      const modalTotal = document.getElementById("modal-total");
+      const closeModalBtn = document.getElementById("closeModal");
+      const retryAllBtn = document.getElementById("retryAll");
+      const openSummaryBtn = document.getElementById("open-summary");
+
+      function showFinalModal() {
+        // build details
+        modalDetails.innerHTML = "";
+        let totalCorrect = 0;
+        let totalQuestions = 0;
+        ["what", "why", "rules"].forEach((id) => {
+          const sc = state[id].score;
+          const tot = QUIZ_BANK[id].length;
+          totalCorrect += sc;
+          totalQuestions += tot;
+          const row = document.createElement("div");
+          row.className = "row";
+          row.innerHTML = `<div style="text-transform:capitalize">${id} section</div><div>${sc} / ${tot}</div>`;
+          modalDetails.appendChild(row);
+        });
+        modalTotal.textContent = `Total: ${totalCorrect} / ${totalQuestions}`;
+
+        modalWrap.style.display = "flex";
+        setTimeout(() => modalWrap.classList.add("open"), 20);
+      }
+
+      function closeFinalModal() {
+        modalWrap.classList.remove("open");
+        setTimeout(() => (modalWrap.style.display = "none"), 220);
+      }
+
+      closeModalBtn.addEventListener("click", closeFinalModal);
+      openSummaryBtn?.addEventListener("click", () => {
+        showFinalModal();
+      });
+
+      retryAllBtn.addEventListener("click", () => {
+        // reset state
+        ["what", "why", "rules"].forEach((id) => {
+          state[id].index = 0;
+          state[id].answers = Array(QUIZ_BANK[id].length).fill(null);
+          state[id].score = 0;
+          state[id].answeredAtIndex = undefined;
+          // re-render UI and enable controls
+          const quizEl = document.querySelector(`.quiz[data-quiz-id="${id}"]`);
+          renderQuestion(quizEl, id);
+          quizEl.querySelectorAll(".option-btn").forEach((b) => {
+            b.disabled = false;
+            b.classList.remove("correct", "wrong");
+          });
+          quizEl
+            .querySelectorAll(".btn-prev, .btn-next, .btn-submit")
+            .forEach((b) => (b.disabled = true));
+          quizEl.querySelector(".feedback").textContent = "";
+          quizEl.querySelector(
+            ".score"
+          ).textContent = `Answered: 0 / ${QUIZ_BANK[id].length}`;
+        });
+        closeFinalModal();
+      });
+
+      // Keyboard accessibility
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const active = document.activeElement;
+          if (!active) return;
+          if (active.classList.contains("option-btn")) active.click();
+          if (
+            active.classList.contains("btn-next") ||
+            active.classList.contains("btn-submit")
+          )
+            active.click();
+        }
+      });
+
+      // NOTE: removed the automatic interval opener that attempted to show the modal on page load.
+      // The modal will now only show after the user submits each section and all sections are truly completed.
+    </script>
+  </body>
+</html>
