@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>PseudoGuide — Practice</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f6f8fb;
+        --card: #fff;
+        --muted: #6b7280;
+        --accent: #365bd8;
+        --success: #16a34a;
+        --danger: #dc2626;
+        --gutter: #eef6ff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: #0f1724;
+        padding: 32px;
+      }
+
+      .practice-wrap {
+        max-width: 980px;
+        margin: 12px auto;
+        background: var(--card);
+        border-radius: 16px;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06);
+        padding: 22px;
+      }
+
+      .title {
+        font-weight: 800;
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+      }
+
+      .meta {
+        display: flex;
+        align-items: flex-start;
+        gap: 18px;
+        background: linear-gradient(
+          90deg,
+          rgba(242, 246, 255, 0.9),
+          rgba(255, 255, 255, 0.9)
+        );
+        padding: 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(15, 23, 42, 0.03);
+      }
+      .meta-left {
+        flex: 1;
+      }
+      .meta .row {
+        margin-bottom: 6px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .meta .label {
+        min-width: 72px;
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .meta .value {
+        color: #0f1724;
+        font-weight: 600;
+      }
+      .badge {
+        margin-left: auto;
+        text-align: center;
+      }
+      .badge .lvl {
+        display: inline-block;
+        background: linear-gradient(180deg, var(--accent), #2e49bf);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 0.95rem;
+        box-shadow: 0 6px 18px rgba(46, 73, 191, 0.18);
+      }
+      .meta .qnum {
+        color: var(--muted);
+        margin-top: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+
+      .editor-card {
+        margin-top: 16px;
+        background: var(--card);
+        border-radius: 12px;
+        padding: 18px;
+        border: 1px solid rgba(15, 23, 42, 0.04);
+      }
+      .editor-label {
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+
+      /* code area: gutter + textarea */
+      .code-wrap {
+        display: flex;
+        border-radius: 10px;
+        overflow: hidden;
+        min-height: 320px;
+        border: 2px solid rgba(59, 130, 246, 0.06);
+        background: #fff;
+      }
+      .gutter {
+        width: 64px;
+        background: var(--gutter);
+        padding: 10px 6px;
+        font-family: "Courier New", monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--muted);
+        border-right: 1px solid rgba(15, 23, 42, 0.03);
+      }
+      .gutter .ln {
+        display: block;
+        padding: 2px 6px;
+        border-radius: 6px;
+        text-align: right;
+        user-select: none;
+      }
+      .gutter .ln.hl {
+        background: #fff6db;
+        color: #b45309;
+        font-weight: 700;
+      }
+
+      .editor-area {
+        flex: 1;
+        padding: 10px 14px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+
+      textarea.code-editor {
+        width: 100%;
+        height: 100%;
+        resize: none;
+        border: 0;
+        outline: none;
+        background: transparent;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #0f1724;
+        padding: 8px 6px;
+      }
+
+      .controls {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 14px;
+      }
+      .btn {
+        border: none;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn-back {
+        background: #eef2f7;
+        color: #111827;
+        box-shadow: 0 6px 14px rgba(2, 6, 23, 0.03);
+      }
+      .btn-clear {
+        background: #fff;
+        color: #111827;
+        border: 1px solid rgba(15, 23, 42, 0.06);
+      }
+      .btn-check {
+        background: linear-gradient(90deg, var(--accent), #2e49bf);
+        color: #fff;
+      }
+      .btn-next {
+        background: linear-gradient(90deg, #10b981, #059669);
+        color: #fff;
+      }
+
+      .message {
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: 10px;
+        background: #fff;
+        border: 1px solid rgba(15, 23, 42, 0.04);
+      }
+      .message.success {
+        border-left: 6px solid var(--success);
+        color: #064e3b;
+        font-weight: 700;
+      }
+      .message.warn {
+        border-left: 6px solid #f59e0b;
+        color: #92400e;
+        font-weight: 700;
+      }
+      .message.error {
+        border-left: 6px solid var(--danger);
+        color: #7f1d1d;
+        font-weight: 700;
+      }
+
+      .hints {
+        margin-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .hint {
+        background: #fbfbfe;
+        border-radius: 10px;
+        padding: 10px 12px;
+        border: 1px solid rgba(15, 23, 42, 0.03);
+        color: #0f1724;
+      }
+
+      @media (max-width: 820px) {
+        .meta {
+          flex-direction: column;
+        }
+        .gutter {
+          width: 48px;
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="practice-wrap" role="main">
+      <div class="title">PseudoGuide — Practice</div>
+
+      <div class="meta" id="metaBox">
+        <div class="meta-left">
+          <div class="row">
+            <div class="label">Question:</div>
+            <div class="value" id="questionText">Loading...</div>
+          </div>
+          <div class="row">
+            <div class="label">Topic:</div>
+            <div class="value" id="topicText">—</div>
+          </div>
+        </div>
+        <div class="badge">
+          <div class="lvl" id="levelBadge">Easy</div>
+          <div class="qnum" id="qNum">Q#0</div>
+        </div>
+      </div>
+
+      <div class="editor-card" aria-label="Write your pseudocode">
+        <div class="editor-label">Write your pseudocode</div>
+
+        <div class="code-wrap" id="codeWrap">
+          <div class="gutter" id="gutter" aria-hidden="true"></div>
+
+          <div class="editor-area">
+            <textarea
+              id="editor"
+              class="code-editor"
+              spellcheck="false"
+              placeholder="Write your pseudocode here..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn btn-back" id="backBtn">Back</button>
+          <button class="btn btn-clear" id="clearBtn">Clear</button>
+          <button class="btn btn-check" id="checkBtn">Check</button>
+          <button class="btn btn-next" id="nextBtn">Next</button>
+        </div>
+
+        <div id="messageWrap"></div>
+        <div class="hints" id="hints"></div>
+      </div>
+    </div>
+
+    <script>
+      /****************************************
+       * Configuration
+       * If your backend runs on different host/port, change API_BASE.
+       ****************************************/
+      const API_BASE = "http://localhost:5000"; // update if your server is elsewhere
+
+      /********************
+       * Local fallback questions (used if backend isn't reachable)
+       * You can expand this list with the questions from your DB as backup.
+       ********************/
+      const FALLBACKS = [
+        `BEGIN
+    INPUT prices
+
+    SET min_price ← prices[0]
+    SET max_profit ← 0
+
+    FOR each price in prices DO
+        IF price < min_price THEN
+            min_price ← price      // update best buying price
+        END IF
+
+        profit ← price - min_price
+
+        IF profit > max_profit THEN
+            max_profit ← profit
+        END IF
+    END FOR
+
+    OUTPUT max_profit
+END`,
+        `BEGIN
+    INPUT s   // the bracket string
+
+    REPEAT
+        previous ← s
+
+        REPLACE "()" in s with ""
+        REPLACE "{}" in s with ""
+        REPLACE "[]" in s with ""
+
+    UNTIL s = previous   // no more changes
+
+    IF s = empty string THEN
+        OUTPUT true
+    ELSE
+        OUTPUT false
+    END IF
+END`,
+        `BEGIN
+    INPUT array
+
+    SET current_sum ← 0
+    SET max_sum ← array[0]
+
+    FOR each number in array DO
+        current_sum ← current_sum + number
+
+        IF current_sum > max_sum THEN
+            max_sum ← current_sum
+        END IF
+
+        IF current_sum < 0 THEN
+            current_sum ← 0
+        END IF
+    END FOR
+
+    OUTPUT max_sum
+END`,
+      ];
+
+      /********************
+       * Small helpers
+       ********************/
+      function escapeHtml(s) {
+        return String(s)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+      }
+      function normalizeLine(line) {
+        if (!line) return "";
+        // remove inline // comments and trailing spaces
+        return line
+          .replace(/\/\/.*$/, "")
+          .replace(/\t/g, "    ")
+          .replace(/\r/g, "")
+          .replace(/\s+$/, "");
+      }
+      function statementType(line) {
+        if (!line) return "";
+        const s = normalizeLine(line).trim().toUpperCase();
+        if (!s) return "";
+        if (/^FOR\b/.test(s)) return "FOR";
+        if (/^IF\b/.test(s)) return "IF";
+        if (/^WHILE\b/.test(s)) return "WHILE";
+        if (/^FUNCTION\b/.test(s)) return "FUNCTION";
+        if (/^BEGIN\b/.test(s)) return "BEGIN";
+        if (/^END\s+FOR\b/.test(s)) return "END_FOR";
+        if (/^END\s+IF\b/.test(s)) return "END_IF";
+        if (/^END\s+WHILE\b/.test(s)) return "END_WHILE";
+        if (/^END\s+FUNCTION\b/.test(s)) return "END_FUNCTION";
+        if (/^END\b/.test(s)) return "END";
+        if (/^\bOUTPUT\b|^\bPRINT\b/.test(s)) return "OUTPUT";
+        if (/^\bSET\b/.test(s) || /←|<=/.test(s)) return "SET";
+        return "OTHER";
+      }
+
+      /********************
+       * DOM refs and gutter handling
+       ********************/
+      const editorEl = document.getElementById("editor");
+      const gutterEl = document.getElementById("gutter");
+      function updateGutter() {
+        const lines = editorEl.value.replace(/\r/g, "").split("\n");
+        let html = "";
+        for (let i = 0; i < Math.max(lines.length, 1); i++) {
+          html += `<span class="ln" data-line="${i}">${i + 1}</span>\n`;
+        }
+        gutterEl.innerHTML = html;
+        // sync highlight cleared by default
+        highlightGutterLine(null);
+      }
+      function highlightGutterLine(idx) {
+        const nodes = gutterEl.querySelectorAll(".ln");
+        nodes.forEach((n) => {
+          const i = Number(n.getAttribute("data-line"));
+          if (idx !== null && i === idx) n.classList.add("hl");
+          else n.classList.remove("hl");
+        });
+      }
+
+      function getEditorLines() {
+        return editorEl.value.replace(/\r/g, "").split("\n");
+      }
+
+      /********************
+       * Parsing / comparison helpers
+       ********************/
+      function parseCorrectPseudocode(raw) {
+        raw = (raw || "").replace(/\r/g, "").trim();
+        if (!raw) return [];
+        return raw
+          .split("\n")
+          .map((l) => l.replace(/\t/g, "    ").replace(/\s+$/, ""));
+      }
+      function logicSequenceFromLines(lines) {
+        const seq = [];
+        for (const l of lines) {
+          const nl = normalizeLine(l);
+          if (!nl) continue;
+          seq.push(statementType(nl));
+        }
+        return seq;
+      }
+      function computeExpectedIndentLevels(lines) {
+        // returns array of nesting levels aligned to non-blank DB lines
+        const levels = [];
+        let depth = 0;
+        for (const raw of lines) {
+          const nl = normalizeLine(raw);
+          if (!nl) continue;
+          levels.push(depth);
+          const t = statementType(nl);
+          if (
+            t === "FOR" ||
+            t === "IF" ||
+            t === "WHILE" ||
+            t === "FUNCTION" ||
+            t === "BEGIN"
+          ) {
+            depth++;
+          }
+          if (
+            t === "END" ||
+            t === "END_FOR" ||
+            t === "END_IF" ||
+            t === "END_WHILE" ||
+            t === "END_FUNCTION"
+          ) {
+            depth = Math.max(0, depth - 1);
+          }
+        }
+        return levels;
+      }
+      function computeUserIndentFromStructure(lines) {
+        // returns nesting levels aligned to non-blank user lines
+        const levels = [];
+        const stack = [];
+        for (let i = 0; i < lines.length; i++) {
+          const raw = lines[i];
+          const nl = normalizeLine(raw);
+          if (!nl) continue;
+          levels.push(stack.length);
+          const t = statementType(nl);
+          if (
+            t === "FOR" ||
+            t === "IF" ||
+            t === "WHILE" ||
+            t === "FUNCTION" ||
+            t === "BEGIN"
+          ) {
+            stack.push({ type: t, line: i });
+          } else if (
+            t === "END" ||
+            t === "END_FOR" ||
+            t === "END_IF" ||
+            t === "END_WHILE" ||
+            t === "END_FUNCTION"
+          ) {
+            if (stack.length > 0) {
+              const top = stack[stack.length - 1];
+              // pop only if matches expected or if END closing a BEGIN
+              if (t === "END") {
+                if (top.type === "BEGIN" || top.type === "FUNCTION") {
+                  stack.pop();
+                } else {
+                  // mismatched close - do not pop (leave unclosed)
+                }
+              } else {
+                const expectedTop =
+                  t === "END_FOR"
+                    ? "FOR"
+                    : t === "END_IF"
+                    ? "IF"
+                    : t === "END_WHILE"
+                    ? "WHILE"
+                    : t === "END_FUNCTION"
+                    ? "FUNCTION"
+                    : null;
+                if (top && top.type === expectedTop) {
+                  stack.pop();
+                }
+              }
+            }
+          }
+        }
+        return levels;
+      }
+      function findUnclosedUserBlocks(lines) {
+        const stack = [];
+        for (let i = 0; i < lines.length; i++) {
+          const nl = normalizeLine(lines[i]);
+          if (!nl) continue;
+          const t = statementType(nl);
+          if (
+            t === "FOR" ||
+            t === "IF" ||
+            t === "WHILE" ||
+            t === "FUNCTION" ||
+            t === "BEGIN"
+          ) {
+            stack.push({ type: t, line: i });
+          } else if (
+            t === "END" ||
+            t === "END_FOR" ||
+            t === "END_IF" ||
+            t === "END_WHILE" ||
+            t === "END_FUNCTION"
+          ) {
+            const top = stack[stack.length - 1];
+            if (!top) {
+              // unmatched close - ignore here
+            } else {
+              if (t === "END") {
+                if (top.type === "BEGIN" || top.type === "FUNCTION") {
+                  stack.pop();
+                }
+              } else {
+                const expectedTop =
+                  t === "END_FOR"
+                    ? "FOR"
+                    : t === "END_IF"
+                    ? "IF"
+                    : t === "END_WHILE"
+                    ? "WHILE"
+                    : t === "END_FUNCTION"
+                    ? "FUNCTION"
+                    : null;
+                if (top.type === expectedTop) stack.pop();
+              }
+            }
+          }
+        }
+        return stack;
+      }
+
+      function sequencesEqual(a, b) {
+        if (a.length !== b.length) return false;
+        for (let i = 0; i < a.length; i++) {
+          if (a[i] !== b[i]) return false;
+        }
+        return true;
+      }
+      function arraysEqual(a, b) {
+        if (a.length !== b.length) return false;
+        for (let i = 0; i < a.length; i++) {
+          if (a[i] !== b[i]) return false;
+        }
+        return true;
+      }
+
+      /********************
+       * UI messages
+       ********************/
+      function showMessage(type, html) {
+        document.getElementById(
+          "messageWrap"
+        ).innerHTML = `<div class="message ${type}">${html}</div>`;
+      }
+      function showHints(list) {
+        document.getElementById("hints").innerHTML = list
+          .map((h) => `<div class="hint">${h}</div>`)
+          .join("");
+      }
+      function clearFeedback() {
+        document.getElementById("messageWrap").innerHTML = "";
+        document.getElementById("hints").innerHTML = "";
+        highlightGutterLine(null);
+      }
+
+      /********************
+       * Main question state + load
+       ********************/
+      let currentQuestion = null;
+      let correctLines = [];
+      let correctSeq = [];
+      let expectedIndent = [];
+
+      async function loadQuestion() {
+        clearFeedback();
+        updateGutter();
+        const urlParams = new URLSearchParams(window.location.search);
+        const rawLevel = urlParams.get("level") || "easy";
+        const level =
+          rawLevel.charAt(0).toUpperCase() + rawLevel.slice(1).toLowerCase();
+        document.getElementById("levelBadge").textContent = level;
+
+        // disable Next while loading
+        const nextBtn = document.getElementById("nextBtn");
+        nextBtn.disabled = true;
+        nextBtn.style.opacity = "0.6";
+
+        // fetch with cache buster
+        const fetchUrl = `${API_BASE}/api/question/${level}?_=${Date.now()}`;
+        let usedFallback = false;
+
+        try {
+          const res = await fetch(fetchUrl, { mode: "cors" });
+          if (!res.ok) throw new Error("Fetch failed");
+          const data = await res.json();
+          // server returns random question object {sl, question, topic, correctPseudocode}
+          currentQuestion = data;
+        } catch (err) {
+          // fallback: pick a random question from local FALLBACKS
+          usedFallback = true;
+          const idx = Math.floor(Math.random() * FALLBACKS.length);
+          currentQuestion = {
+            sl: `F${Math.floor(Math.random() * 1000)}`,
+            level,
+            question: "Sample question (offline) — using fallback question",
+            topic: "Sample",
+            correctPseudocode: FALLBACKS[idx],
+          };
+        }
+
+        // render meta
+        document.getElementById("questionText").textContent =
+          currentQuestion.question || "Error loading question";
+        document.getElementById("topicText").textContent =
+          currentQuestion.topic || "—";
+        document.getElementById("qNum").textContent = `Q#${
+          currentQuestion.sl || 0
+        }`;
+
+        // prepare correct pseudocode arrays
+        correctLines = parseCorrectPseudocode(
+          currentQuestion.correctPseudocode || ""
+        );
+        correctSeq = logicSequenceFromLines(correctLines);
+        expectedIndent = computeExpectedIndentLevels(correctLines);
+
+        // clear editor
+        editorEl.value = "";
+        updateGutter();
+        clearFeedback();
+
+        if (usedFallback) {
+          showMessage(
+            "warn",
+            "Couldn't reach backend API — using a local sample question. Start your backend or update <code>API_BASE</code> to use live questions."
+          );
+          showHints([]);
+        } else {
+          // clear messages if previously shown
+          document.getElementById("messageWrap").innerHTML = "";
+          document.getElementById("hints").innerHTML = "";
+        }
+
+        // re-enable Next
+        nextBtn.disabled = false;
+        nextBtn.style.opacity = "1";
+      }
+
+      /********************
+       * Check button
+       ********************/
+      document.getElementById("checkBtn").addEventListener("click", () => {
+        clearFeedback();
+        const userLines = getEditorLines();
+
+        // quickly detect unclosed user blocks
+        const unclosed = findUnclosedUserBlocks(userLines);
+        if (unclosed.length > 0) {
+          const top = unclosed[unclosed.length - 1];
+          const type = top.type;
+          const openLine = top.line;
+          const expectClosing =
+            type === "BEGIN"
+              ? "END"
+              : type === "FUNCTION"
+              ? "END FUNCTION"
+              : `END ${type}`;
+          highlightGutterLine(openLine);
+          showMessage(
+            "warn",
+            `Missing closing for <strong>${type}</strong> opened at line ${
+              openLine + 1
+            }. Expected <strong>${expectClosing}</strong>.`
+          );
+          showHints([
+            `Insert <code>${expectClosing}</code> after the block that started at line ${
+              openLine + 1
+            }.`,
+          ]);
+          return;
+        }
+
+        // build sequences ignoring blanks
+        const userSeq = logicSequenceFromLines(userLines);
+        const logicMatch = sequencesEqual(correctSeq, userSeq);
+
+        // compute indentation structures aligned to non-blank lines
+        const userIndent = computeUserIndentFromStructure(userLines);
+        let indentMatch = false;
+        if (logicMatch) {
+          if (userIndent.length === expectedIndent.length) {
+            indentMatch = arraysEqual(userIndent, expectedIndent);
+          } else {
+            // different non-blank counts — considered logic mismatch generally
+            indentMatch = false;
+          }
+        }
+
+        updateGutter();
+
+        if (logicMatch && indentMatch) {
+          showMessage(
+            "success",
+            "Correct! Excellent work — logic and indentation are correct."
+          );
+          showHints([]);
+          return;
+        }
+        if (logicMatch && !indentMatch) {
+          showMessage("warn", "Logic correct — indentation needs adjustment.");
+          const sample = correctLines
+            .filter((l) => normalizeLine(l).trim() !== "")
+            .slice(0, 50)
+            .join("\n");
+          showHints([
+            `<strong>Expected indentation sample:</strong><pre style="margin:6px 0;padding:8px;background:#fff;border-radius:6px;border:1px solid rgba(0,0,0,0.04)">${escapeHtml(
+              sample
+            )}</pre>`,
+          ]);
+          return;
+        }
+
+        // logic mismatch: provide first mismatch hint
+        const mismatch = findFirstSequenceMismatch(correctLines, userLines);
+        showMessage("error", "Logic incorrect — please review the hint below.");
+        showHints(mismatch.hints);
+        if (typeof mismatch.userLineIndex === "number")
+          highlightGutterLine(mismatch.userLineIndex);
+        else highlightGutterLine(null);
+      });
+
+      // helper to find first mismatch (ignores blank lines when mapping)
+      function findFirstSequenceMismatch(correctLines, userLines) {
+        const hints = [];
+        const corrTokens = [];
+        for (let i = 0; i < correctLines.length; i++) {
+          const nl = normalizeLine(correctLines[i]);
+          if (!nl) continue;
+          corrTokens.push({
+            type: statementType(nl),
+            lineIndex: i,
+            text: correctLines[i],
+          });
+        }
+        const userTokens = [];
+        for (let i = 0; i < userLines.length; i++) {
+          const nl = normalizeLine(userLines[i]);
+          if (!nl) continue;
+          userTokens.push({
+            type: statementType(nl),
+            lineIndex: i,
+            text: userLines[i],
+          });
+        }
+
+        const n = Math.min(corrTokens.length, userTokens.length);
+        let idx = -1;
+        for (let i = 0; i < n; i++) {
+          if (corrTokens[i].type !== userTokens[i].type) {
+            idx = i;
+            break;
+          }
+          // small heuristic for SET: check content
+          if (corrTokens[i].type === "SET") {
+            const ca = normalizeLine(corrTokens[i].text).toUpperCase();
+            const ua = normalizeLine(userTokens[i].text).toUpperCase();
+            if (ca !== ua && !ca.includes(ua) && !ua.includes(ca)) {
+              idx = i;
+              break;
+            }
+          }
+        }
+        if (idx === -1 && corrTokens.length !== userTokens.length) idx = n;
+        if (idx === -1) {
+          hints.push(
+            "No simple token mismatch found — check small differences (operators, names, or END vs END IF)."
+          );
+          return { hints };
+        }
+
+        const corr = corrTokens[idx] || null;
+        const usr = userTokens[idx] || null;
+        if (corr)
+          hints.push(
+            `<strong>Expected (line ${
+              corr.lineIndex + 1
+            }):</strong> ${escapeHtml(corr.text)}`
+          );
+        else hints.push(`<strong>Expected:</strong> (missing)`);
+        if (usr)
+          hints.push(
+            `<strong>Your line (line ${
+              usr.lineIndex + 1
+            }):</strong> ${escapeHtml(usr.text)}`
+          );
+        else hints.push(`<strong>Your line:</strong> (missing or blank)`);
+        hints.push(
+          `<div style="color:#6b7280;margin-top:6px">Hint: check statement type (IF / FOR / SET / OUTPUT / END) and ordering. Also verify operator directions (e.g. &gt; vs &lt;).</div>`
+        );
+        return { hints, userLineIndex: usr ? usr.lineIndex : undefined };
+      }
+
+      /********************
+       * Buttons: other
+       ********************/
+      document
+        .getElementById("backBtn")
+        .addEventListener(
+          "click",
+          () => (window.location.href = "levels.html")
+        );
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        editorEl.value = "";
+        updateGutter();
+        clearFeedback();
+      });
+      document.getElementById("nextBtn").addEventListener("click", async () => {
+        await loadQuestion();
+      });
+
+      // editor events
+      editorEl.addEventListener("input", updateGutter);
+      editorEl.addEventListener("scroll", () => {
+        gutterEl.scrollTop = editorEl.scrollTop;
+      });
+      gutterEl.addEventListener("click", (e) => {
+        if (e.target.classList.contains("ln")) {
+          const idx = Number(e.target.getAttribute("data-line"));
+          const lines = getEditorLines();
+          editorEl.focus();
+          // compute char offset for textarea
+          let offset = 0;
+          for (let i = 0; i < idx && i < lines.length; i++)
+            offset += lines[i].length + 1;
+          editorEl.setSelectionRange(offset, offset);
+        }
+      });
+
+      // initial load
+      updateGutter();
+      loadQuestion();
+    </script>
+  </body>
+</html>
